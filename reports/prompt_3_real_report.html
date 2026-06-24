@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prompt 3: Experimental Design - Single-Call vs. Multi-Agent</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #fff;
+      --text: #18202a;
+      --muted: #657184;
+      --line: #d9dee7;
+      --accent: #0f766e;
+      --bad: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.55 Arial, sans-serif; color: var(--text); background: var(--bg); }
+    header, main { max-width: 1240px; margin: 0 auto; padding: 24px; }
+    h1, h2 { margin: 0 0 12px; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 20px; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 14px 0; }
+    .metric strong { display: block; font-size: 28px; color: var(--accent); }
+    .lead { max-width: 900px; }
+    table { width: 100%; border-collapse: collapse; background: var(--panel); }
+    th, td { border: 1px solid var(--line); padding: 10px; vertical-align: top; text-align: left; }
+    th { background: #eef2f7; }
+    code { display: block; white-space: pre-wrap; color: var(--muted); }
+    ul { padding-left: 20px; }
+    .sources span { display: block; color: var(--muted); }
+    .errors li { color: var(--bad); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e6fffb; color: var(--accent); }
+    .help {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      margin-left: 6px;
+      border-radius: 50%;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: help;
+    }
+    @media (max-width: 840px) { .grid, .compare { grid-template-columns: 1fr; } header, main { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="badge">Real API data</span>
+    <h1>Prompt 3: Experimental Design - Single-Call vs. Multi-Agent</h1>
+    <p class="muted lead">Report này chạy cùng một prompt qua hai luồng: baseline một agent và multi-agent có Supervisor, Researcher, Analyst, Writer. HTML render từ <code>reports/prompt_3_real_report.json</code>. Cost là ước tính từ token usage và rate cấu hình.</p>
+  </header>
+  <main>
+    <section class="grid">
+      <div class="panel metric"><span>Multi input tokens <span class="help" title="Tổng prompt tokens của các LLM call trong multi-agent run.">?</span></span><strong>1296</strong></div>
+      <div class="panel metric"><span>Multi output tokens <span class="help" title="Tổng completion tokens do model sinh ra trong multi-agent run.">?</span></span><strong>1200</strong></div>
+      <div class="panel metric"><span>Multi latency <span class="help" title="Wall-clock time từ lúc bắt đầu multi-agent run tới khi có final answer.">?</span></span><strong>15.078s</strong></div>
+      <div class="panel metric"><span>Multi estimated cost <span class="help" title="Ước tính từ token usage nhân với LLM_INPUT/OUTPUT_COST_PER_1M_TOKENS.">?</span></span><strong>$0.000374</strong></div>
+    </section>
+
+    <section class="panel">
+      <h2>Benchmark Metrics <span class="help" title="Quality là điểm heuristic: final answer = 7, có sources +1, có errors trừ tối đa 2. Không phải judge LLM.">?</span></h2>
+      <table>
+        <thead><tr><th>Run</th><th>Latency <span class="help" title="Tổng thời gian chạy của run.">?</span></th><th>Input tokens <span class="help" title="Prompt tokens.">?</span></th><th>Output tokens <span class="help" title="Completion tokens.">?</span></th><th>Estimated cost <span class="help" title="Chi phí ước tính, không phải hóa đơn provider.">?</span></th><th>Quality <span class="help" title="Heuristic nội bộ để so sánh nhanh.">?</span></th><th>Sources <span class="help" title="Số nguồn Researcher thu được.">?</span></th><th>Errors <span class="help" title="Số lỗi đã được fallback và ghi lại.">?</span></th></tr></thead>
+        <tbody><tr>
+          <td>real-baseline</td>
+          <td>5.905</td>
+          <td>250</td>
+          <td>600</td>
+          <td>0.000128</td>
+          <td>7.0</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <td>real-multi-agent</td>
+          <td>15.078</td>
+          <td>1296</td>
+          <td>1200</td>
+          <td>0.000374</td>
+          <td>8.0</td>
+          <td>3</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <td>real-fallback</td>
+          <td>13.813</td>
+          <td>547</td>
+          <td>709</td>
+          <td>0.000188</td>
+          <td>6.0</td>
+          <td>0</td>
+          <td>1</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Single vs Multi-Agent</h2>
+      <p class="muted">Bảng này là phần đọc nhanh: multi-agent thường tốn thêm token/thời gian nhưng có nguồn, trace và chia vai rõ hơn.</p>
+      <table>
+        <thead><tr><th>Metric</th><th>Single Agent</th><th>Multi Agent</th></tr></thead>
+        <tbody><tr>
+          <th>Latency</th>
+          <td>5.905s</td>
+          <td>15.078s</td>
+        </tr>
+<tr>
+          <th>Input tokens</th>
+          <td>250</td>
+          <td>1296</td>
+        </tr>
+<tr>
+          <th>Output tokens</th>
+          <td>600</td>
+          <td>1200</td>
+        </tr>
+<tr>
+          <th>Estimated cost</th>
+          <td>$0.000128</td>
+          <td>$0.000374</td>
+        </tr>
+<tr>
+          <th>Sources</th>
+          <td>0</td>
+          <td>3</td>
+        </tr>
+<tr>
+          <th>Trace steps</th>
+          <td>1</td>
+          <td>14</td>
+        </tr>
+<tr>
+          <th>Errors</th>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <th>Routes</th>
+          <td>baseline</td>
+          <td>researcher, analyst, writer, done</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Prompts Used <span class="help" title="Các system/user prompts thực tế đã gửi vào LLM client cho baseline, analyst và writer.">?</span></h2>
+      <table>
+        <thead><tr><th>Run</th><th>Agent</th><th>System prompt</th><th>User prompt</th></tr></thead>
+        <tbody><tr>
+                  <td>Single Agent</td>
+                  <td>writer</td>
+                  <td><code>You are a single research agent. Answer directly and mention trade-offs.</code></td>
+                  <td><code>You are designing a research experiment to compare a single-call LLM system with a multi-agent LLM system on complex research tasks.<br><br>Your deliverable must be a complete experimental plan.<br><br>You must include:<br>1. The research question<br>2. Hypotheses<br>3. Task design<br>4. Datasets or source materials<br>5. Fair comparison setup<br>6. Metrics<br>7. Human evaluation criteria<br>8. Statistical or methodological considerations<br>9. Expected results and alternative interpretations<br>10. A red-team section explaining how the experiment could be misleading, unfair, or easy to game<br>11. A revised experiment design after taking the red-team critique seriously<br><br>Constraints:<br>- You must explicitly address token budget fairness<br>- You must explain how to avoid giving the multi-agent system an unfair advantage<br>- You must discuss how to separate gains from decomposition vs gains from more inference time<br>- The red-team critique must be concrete, not superficial<br><br>Output format:<br>Write the answer as a structured internal lab proposal.</code></td>
+                </tr><tr>
+                  <td>Multi Agent</td>
+                  <td>analyst</td>
+                  <td><code>You are the analyst agent.</code></td>
+                  <td><code>Query: You are designing a research experiment to compare a single-call LLM system with a multi-agent LLM system on complex research tasks.<br><br>Your deliverable must be a complete experimental plan.<br><br>You must include:<br>1. The research question<br>2. Hypotheses<br>3. Task design<br>4. Datasets or source materials<br>5. Fair comparison setup<br>6. Metrics<br>7. Human evaluation criteria<br>8. Statistical or methodological considerations<br>9. Expected results and alternative interpretations<br>10. A red-team section explaining how the experiment could be misleading, unfair, or easy to game<br>11. A revised experiment design after taking the red-team critique seriously<br><br>Constraints:<br>- You must explicitly address token budget fairness<br>- You must explain how to avoid giving the multi-agent system an unfair advantage<br>- You must discuss how to separate gains from decomposition vs gains from more inference time<br>- The red-team critique must be concrete, not superficial<br><br>Output format:<br>Write the answer as a structured internal lab proposal.<br>Research notes:<br>- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.<br>- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.<br>- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.<br>Extract key claims, weak evidence, and when multi-agent is useful.</code></td>
+                </tr>
+<tr>
+                  <td>Multi Agent</td>
+                  <td>writer</td>
+                  <td><code>You are the writer agent producing the final answer.</code></td>
+                  <td><code>Query: You are designing a research experiment to compare a single-call LLM system with a multi-agent LLM system on complex research tasks.<br><br>Your deliverable must be a complete experimental plan.<br><br>You must include:<br>1. The research question<br>2. Hypotheses<br>3. Task design<br>4. Datasets or source materials<br>5. Fair comparison setup<br>6. Metrics<br>7. Human evaluation criteria<br>8. Statistical or methodological considerations<br>9. Expected results and alternative interpretations<br>10. A red-team section explaining how the experiment could be misleading, unfair, or easy to game<br>11. A revised experiment design after taking the red-team critique seriously<br><br>Constraints:<br>- You must explicitly address token budget fairness<br>- You must explain how to avoid giving the multi-agent system an unfair advantage<br>- You must discuss how to separate gains from decomposition vs gains from more inference time<br>- The red-team critique must be concrete, not superficial<br><br>Output format:<br>Write the answer as a structured internal lab proposal.<br>Research:<br>- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.<br>- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.<br>- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.<br>Analysis:<br>**Internal Lab Proposal: Experimental Comparison of Single-Call LLM and Multi-Agent LLM Systems**<br><br>**Research Question:**<br>Can a multi-agent LLM system outperform a single-call LLM system on complex research tasks, and if so, what are the key factors contributing to this improvement?<br><br>**Hypotheses:**<br><br>1. The multi-agent LLM system will achieve better performance than the single-call LLM system on complex research tasks.<br>2. The multi-agent LLM system will exhibit improved performance due to its ability to decompose tasks into specialized sub-tasks, rather than simply increasing inference time.<br><br>**Task Design:**<br>We will design a set of complex research tasks that require a combination of natural language understanding, reasoning, and generation. These tasks will be selected from a range of domains, including but not limited to:<br><br>1. Scientific literature analysis and summarization<br>2. Conversational dialogue systems for customer support<br>3. Text-based game playing and strategy<br><br>Each task will be designed to require a combination of specialized sub-tasks, such as:<br><br>1. Information retrieval and filtering<br>2. Text analysis and summarization<br>3. Reasoning and decision-making<br><br>**Datasets or Source Materials:**<br>We will use a combination of publicly available datasets and in-house generated data to support our experiments. These datasets will include:<br><br>1. Scientific literature datasets (e.g. PubMed, arXiv)<br>2. Conversational dialogue datasets (e.g. DSTC, MultiWOZ)<br>3. Text-based game playing datasets (e.g. GameSparks, TextWorld)<br><br>**Fair Comparison Setup:**<br>To ensure a fair comparison between the single-call LLM and multi-agent LLM systems, we will implement the following:<br><br>1. **Token Budget Fairness:** We will ensure that both systems have access to the same token budget, and that any differences in performance are not due to differences in token usage.<br>2. **Avoiding Unfair Advantages:** We will design the tasks and datasets to avoid giving the multi-agent system an unfair advantage. For example, we will not use tasks that require the multi-agent system to perform a single, complex task that is not feasible for the single-call LLM system.<br>3. **Separating Gains from Decomposition vs. Inference Time:** We will use a combination of metrics and analysis to separate the gains from decomposition (i.e. the ability of the multi-agent system to break down tasks into specialized sub-tasks) from the gains from increased inference time (i.e. the ability of the multi-agent system to perform more complex tasks due to increased computational resources).<br><br>**Metrics:**<br>We will use a combination of metrics to evaluate the performance of both systems, including:<br><br>1. **Accuracy:** We will measure the accuracy of both systems on a range of tasks, including but not limited to scientific literature analysis and summarization, conversational dialogue systems for customer support, and text-based game playing and strategy.<br>2. **Efficiency<br>Sources:<br>[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents<br>[2] OpenAI Agents Orchestration - https://developers.openai.com/<br>[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/<br>Write a concise final answer with source references when available.</code></td>
+                </tr></tbody>
+      </table>
+    </section>
+
+    <section class="compare">
+      <div class="panel">
+        <h2>Single Agent Output</h2>
+        <p>**Internal Lab Proposal: Experimental Comparison of Single-Call LLM and Multi-Agent LLM Systems**<br><br>**Research Question:**<br>Can a multi-agent LLM system outperform a single-call LLM system on complex research tasks, and if so, what are the underlying mechanisms driving this performance difference?<br><br>**Hypotheses:**<br><br>1. The multi-agent LLM system will outperform the single-call LLM system on complex research tasks.<br>2. The performance difference between the two systems will be attributed to the multi-agent system&#x27;s ability to decompose tasks into smaller sub-tasks, rather than simply having more inference time.<br><br>**Task Design:**<br>We will design a set of complex research tasks that require a combination of reasoning, problem-solving, and knowledge retrieval. These tasks will be drawn from a range of domains, including but not limited to:<br><br>* Scientific literature review and summarization<br>* Complex mathematical problem-solving<br>* Critical thinking and decision-making<br><br>Each task will be designed to require a minimum of 10,000 tokens to complete, with a maximum of 50,000 tokens.<br><br>**Datasets or Source Materials:**<br>We will use a combination of publicly available datasets and in-house generated materials to support our tasks. These will include:<br><br>* Scientific literature datasets (e.g. PubMed, arXiv)<br>* Mathematical problem-solving datasets (e.g. MathQA, Hugging Face&#x27;s Math dataset)<br>* Critical thinking and decision-making datasets (e.g. CLEVR, Hugging Face&#x27;s Decision Making dataset)<br><br>**Fair Comparison Setup:**<br>To ensure a fair comparison between the two systems, we will implement the following measures:<br><br>* **Token budget fairness:** We will allocate a fixed token budget to each system, with a maximum of 50,000 tokens per task. This will prevent the multi-agent system from having an unfair advantage due to its ability to process more tokens.<br>* **No additional training data:** We will not provide the multi-agent system with any additional training data or fine-tuning opportunities that are not available to the single-call system.<br>* **No task decomposition:** We will not allow the multi-agent system to decompose tasks into smaller sub-tasks that are not available to the single-call system.<br><br>**Metrics:**<br>We will evaluate the performance of both systems using a range of metrics, including:<br><br>* **Accuracy:** We will measure the accuracy of each system&#x27;s output against a set of human-annotated gold standards.<br>* **F1-score:** We will calculate the F1-score for each system&#x27;s output, using a set of pre-defined evaluation metrics.<br>* **Inference time:** We will measure the inference time required by each system to complete each task.<br><br>**Human Evaluation Criteria:**<br>We will use a set of human evaluators to assess the quality of each system&#x27;s output. These evaluators will be asked to evaluate the output based on the following criteria:<br><br>* **Accuracy:** Is the output accurate and correct?<br>* **Relevance:** Is the output</p>
+      </div>
+      <div class="panel">
+        <h2>Multi Agent Output</h2>
+        <p>**Internal Lab Proposal: Experimental Comparison of Single-Call LLM and Multi-Agent LLM Systems**<br><br>**Research Question:**<br>Can a multi-agent LLM system outperform a single-call LLM system on complex research tasks, and if so, what are the key factors contributing to this improvement?<br><br>**Hypotheses:**<br><br>1. The multi-agent LLM system will achieve better performance than the single-call LLM system on complex research tasks.<br>2. The multi-agent LLM system will exhibit improved performance due to its ability to decompose tasks into specialized sub-tasks, rather than simply increasing inference time.<br><br>**Task Design:**<br>We will design a set of complex research tasks that require a combination of natural language understanding, reasoning, and generation. These tasks will be selected from a range of domains, including but not limited to:<br><br>1. Scientific literature analysis and summarization<br>2. Conversational dialogue systems for customer support<br>3. Text-based game playing and strategy<br><br>Each task will be designed to require a combination of specialized sub-tasks, such as:<br><br>1. Information retrieval and filtering<br>2. Text analysis and summarization<br>3. Reasoning and decision-making<br><br>**Datasets or Source Materials:**<br>We will use a combination of publicly available datasets and in-house generated data to support our experiments. These datasets will include:<br><br>1. Scientific literature datasets (e.g. PubMed, arXiv)<br>2. Conversational dialogue datasets (e.g. DSTC, MultiWOZ)<br>3. Text-based game playing datasets (e.g. GameSparks, TextWorld)<br><br>**Fair Comparison Setup:**<br>To ensure a fair comparison between the single-call LLM and multi-agent LLM systems, we will implement the following:<br><br>1. **Token Budget Fairness:** We will ensure that both systems have access to the same token budget, and that any differences in performance are not due to differences in token usage.<br>2. **Avoiding Unfair Advantages:** We will design the tasks and datasets to avoid giving the multi-agent system an unfair advantage. For example, we will not use tasks that require the multi-agent system to perform a single, complex task that is not feasible for the single-call LLM system.<br>3. **Separating Gains from Decomposition vs. Inference Time:** We will use a combination of metrics and analysis to separate the gains from decomposition (i.e. the ability of the multi-agent system to break down tasks into specialized sub-tasks) from the gains from increased inference time (i.e. the ability of the multi-agent system to perform more complex tasks due to increased computational resources).<br><br>**Metrics:**<br>We will use a combination of metrics to evaluate the performance of both systems, including:<br><br>1. **Accuracy:** We will measure the accuracy of both systems on a range of tasks, including but not limited to scientific literature analysis and summarization, conversational dialogue systems for customer support, and text-based game playing and strategy.<br>2. **Efficiency<br><br>Sources:<br>[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents<br>[2] OpenAI Agents Orchestration - https://developers.openai.com/<br>[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Luồng Chạy Dễ Đọc</h2>
+      <p class="muted">Mỗi dòng dưới đây giải thích bước đó làm gì, nhận input gì, tạo output gì, tốn bao nhiêu thời gian và token.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Bước</th>
+            <th>Làm gì</th>
+            <th>Input</th>
+            <th>Output</th>
+            <th>Thời gian</th>
+            <th>Input tokens</th>
+            <th>Output tokens</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody><tr>
+          <td><b>Baseline</b></td>
+          <td>Một agent trả lời trực tiếp, dùng làm mốc so sánh.</td>
+          <td>Query gốc</td>
+          <td>Final answer baseline</td>
+          <td>5.905069s</td>
+          <td>250</td>
+          <td>600</td>
+          <td>$0.000128</td>
+        </tr>
+<tr>
+          <td><b>Supervisor</b></td>
+          <td>Kiểm tra state và chọn agent tiếp theo.</td>
+          <td>ResearchState hiện tại</td>
+          <td>Route history: researcher, analyst, writer, done</td>
+          <td>0.000019s</td>
+          <td>0</td>
+          <td>0</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Researcher</b></td>
+          <td>Tìm nguồn và viết research notes.</td>
+          <td>Query + max_sources</td>
+          <td>3 sources, research_notes</td>
+          <td>0.000020s</td>
+          <td>0</td>
+          <td>0</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Analyst</b></td>
+          <td>Phân tích notes thành insight/trade-off.</td>
+          <td>research_notes</td>
+          <td>analysis_notes</td>
+          <td>7.981735s</td>
+          <td>316</td>
+          <td>600</td>
+          <td>$0.000137</td>
+        </tr>
+<tr>
+          <td><b>Writer</b></td>
+          <td>Tổng hợp final answer và gắn source references.</td>
+          <td>research_notes + analysis_notes + sources</td>
+          <td>final_answer</td>
+          <td>7.096322s</td>
+          <td>980</td>
+          <td>600</td>
+          <td>$0.000237</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Thời Gian Theo Event</h2>
+      <p class="muted">Đây là timing raw theo từng event được ghi trong trace của multi-agent.</p>
+      <table><thead><tr><th>Step</th><th>Duration (s)</th></tr></thead><tbody><tr><td>supervisor</td><td>0.000005</td></tr>
+<tr><td>researcher</td><td>0.000020</td></tr>
+<tr><td>supervisor</td><td>0.000002</td></tr>
+<tr><td>analyst</td><td>7.981735</td></tr>
+<tr><td>supervisor</td><td>0.000006</td></tr>
+<tr><td>writer</td><td>7.096322</td></tr>
+<tr><td>supervisor</td><td>0.000006</td></tr></tbody></table>
+    </section>
+
+    <section class="panel">
+      <h2>Trace Raw Của Multi-Agent</h2>
+      <p class="muted">Dùng phần này để debug chi tiết route, token usage, source count và payload nội bộ.</p>
+      <table><thead><tr><th>Event</th><th>Payload</th></tr></thead><tbody><tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;researcher&quot;, &quot;iteration&quot;: 1}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 4.699999408330768e-06}</code></td></tr>
+<tr><td>researcher</td><td><code>{&quot;sources&quot;: 3, &quot;errors&quot;: 0}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;researcher&quot;, &quot;duration_seconds&quot;: 2.029999996011611e-05}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;analyst&quot;, &quot;iteration&quot;: 2}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 2.0000006770715117e-06}</code></td></tr>
+<tr><td>analyst</td><td><code>{&quot;has_analysis&quot;: true, &quot;input_tokens&quot;: 316, &quot;output_tokens&quot;: 600, &quot;cost_usd&quot;: 0.0001374}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;analyst&quot;, &quot;duration_seconds&quot;: 7.981734599999982}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;writer&quot;, &quot;iteration&quot;: 3}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 6.100000973674469e-06}</code></td></tr>
+<tr><td>writer</td><td><code>{&quot;has_final_answer&quot;: true, &quot;input_tokens&quot;: 980, &quot;output_tokens&quot;: 600, &quot;cost_usd&quot;: 0.000237}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;writer&quot;, &quot;duration_seconds&quot;: 7.096322199999122}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;done&quot;, &quot;iteration&quot;: 4}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 6.199999916134402e-06}</code></td></tr></tbody></table>
+    </section>
+
+    <section class="panel">
+      <h2>Research Sources</h2>
+      <ul class="sources"><li><a href="https://www.anthropic.com/engineering/building-effective-agents">Building Effective Agents</a><span>Agent systems work best when workflows are simple, observable, and bounded.</span></li>
+<li><a href="https://developers.openai.com/">OpenAI Agents Orchestration</a><span>Handoffs and orchestration help split specialized work across agents.</span></li>
+<li><a href="https://langchain-ai.github.io/langgraph/concepts/">LangGraph Concepts</a><span>Stateful graphs make agent routing and trace inspection explicit.</span></li></ul>
+    </section>
+
+    <section class="panel">
+      <h2>Fallback Run</h2>
+      <p class="muted">Run này cố tình dùng query lỗi để chứng minh workflow không chết giữa chừng.</p>
+      <p><b>Query:</b> search-error Compare agent workflows</p>
+      <p><b>Output:</b> **Final Answer:**<br><br>Comparing agent workflows using multi-agent systems (MAS) can be a useful approach, but it requires further research and development. MAS can facilitate the comparison of agent workflows by enabling the simulation of different scenarios and the analysis of agent interactions. However, the current research on this topic is limited, and more studies are needed to confirm the effectiveness of this approach.<br><br>**Key Takeaways:**<br><br>1. Multi-agent systems can be useful in comparing agent workflows by allowing multiple agents to interact and adapt to each other&#x27;s actions.<br>2. Agent workflows can be compared using metrics such as efficiency, effectiveness, and scalability.<br>3. MAS can facilitate the comparison of agent workflows by enabling the simulation of different scenarios and the analysis of agent interactions.<br><br>**Recommendations:**<br><br>1. Conduct more research on comparing agent workflows using multi-agent systems.<br>2. Develop concrete examples of multi-agent systems being used to compare agent workflows.<br>3. Apply theoretical frameworks to real-world scenarios to demonstrate the practical applicability of comparing agent workflows using multi-agent systems.<br><br>**Confidence Level:** Low confidence (40%) due to the lack of concrete examples and limited research on comparing agent workflows using multi-agent systems.<br><br>**References:**<br><br>(Note: No external sources were found, but the analysis is based on general knowledge and theoretical frameworks.)<br><br>**Future Research Directions:**<br><br>1. Investigate the use of multi-agent systems in real-world scenarios to compare agent workflows.<br>2. Develop concrete examples of multi-agent systems being used to compare agent workflows.<br>3. Apply theoretical frameworks to real-world scenarios to demonstrate the practical applicability of comparing agent workflows using multi-agent systems.</p>
+      <table><thead><tr><th>Step</th><th>Duration (s)</th></tr></thead><tbody><tr><td>supervisor</td><td>0.000002</td></tr>
+<tr><td>researcher</td><td>0.000028</td></tr>
+<tr><td>supervisor</td><td>0.000002</td></tr>
+<tr><td>analyst</td><td>6.531963</td></tr>
+<tr><td>supervisor</td><td>0.000006</td></tr>
+<tr><td>writer</td><td>7.280918</td></tr>
+<tr><td>supervisor</td><td>0.000006</td></tr></tbody></table>
+      <ul class="errors"><li>researcher search failed: Mock search failure requested by query</li></ul>
+    </section>
+  </main>
+</body>
+</html>

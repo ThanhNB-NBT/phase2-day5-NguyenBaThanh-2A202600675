@@ -10,4 +10,14 @@ build/
 *.egg-info/
 reports/*.json
 reports/*.md
+reports/*.html
+!reports/benchmark_report.json
+!reports/benchmark_report.md
+!reports/benchmark_report.html
+!reports/mock_benchmark_report.html
+!reports/real_benchmark_report.html
+!reports/prompt_*_report.html
+!reports/prompt_*_mock_report.html
+!reports/prompt_*_real_report.html
 !.gitkeep
+.codegraph/

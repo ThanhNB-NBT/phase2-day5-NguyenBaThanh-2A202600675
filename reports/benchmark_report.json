@@ -1,0 +1,434 @@
+{
+  "mode": "real",
+  "title": "Multi-Agent Research Benchmark",
+  "query": "Compare single-agent and multi-agent workflows",
+  "cost_note": "estimated from token usage and LLM_*_COST_PER_1M_TOKENS env vars",
+  "runs": {
+    "real-baseline": {
+      "run_name": "real-baseline",
+      "latency_seconds": 5.235248099999808,
+      "quality_score": 7.0,
+      "estimated_cost_usd": 8.55e-05,
+      "input_tokens": 56,
+      "output_tokens": 514,
+      "query": "Compare single-agent and multi-agent workflows",
+      "final_answer": "**Single-Agent Workflow**\n\nIn a single-agent workflow, a single researcher or agent is responsible for completing all tasks, from data collection to analysis and reporting. This approach is often used in small-scale projects or when the scope of the project is limited.\n\n**Advantages:**\n\n1. **Simplified communication**: There is no need to coordinate with multiple agents, reducing communication overhead.\n2. **Faster decision-making**: A single agent can make decisions quickly without needing to consult with others.\n3. **Lower overhead**: Fewer agents mean lower costs for training, management, and infrastructure.\n\n**Disadvantages:**\n\n1. **Increased workload**: A single agent must handle all tasks, leading to a heavier workload and potential burnout.\n2. **Limited expertise**: A single agent may not have the necessary expertise or skills to complete all tasks, leading to knowledge gaps.\n3. **Reduced scalability**: Single-agent workflows can become bottlenecked as the project grows in scope or complexity.\n\n**Multi-Agent Workflow**\n\nIn a multi-agent workflow, multiple researchers or agents work together to complete tasks, share expertise, and divide workload. This approach is often used in large-scale projects or when the scope of the project is complex.\n\n**Advantages:**\n\n1. **Distributed workload**: Multiple agents can share tasks, reducing the workload for each individual and increasing overall productivity.\n2. **Expertise sharing**: Agents with different skills and expertise can collaborate, reducing knowledge gaps and improving overall quality.\n3. **Scalability**: Multi-agent workflows can handle larger projects and more complex tasks.\n\n**Disadvantages:**\n\n1. **Increased complexity**: Coordinating multiple agents requires more effort and can lead to communication overhead.\n2. **Decision-making challenges**: Multiple agents may have different opinions, leading to slower decision-making and potential conflicts.\n3. **Higher overhead**: More agents mean higher costs for training, management, and infrastructure.\n\n**Trade-offs**\n\nWhen deciding between a single-agent and multi-agent workflow, consider the following trade-offs:\n\n* **Speed vs. quality**: Single-agent workflows may be faster, but multi-agent workflows can produce higher-quality results due to the sharing of expertise.\n* **Cost vs. scalability**: Single-agent workflows are often less expensive, but multi-agent workflows can handle larger projects and more complex tasks.\n* **Autonomy vs. coordination**: Single-agent workflows offer more autonomy, but multi-agent workflows require more coordination and communication.\n\nUltimately, the choice between a single-agent and multi-agent workflow depends on the specific needs and goals of the project.",
+      "research_notes": null,
+      "analysis_notes": null,
+      "route_history": [],
+      "sources": [],
+      "trace": [
+        {
+          "name": "baseline",
+          "payload": {
+            "input_tokens": 56,
+            "output_tokens": 514,
+            "cost_usd": 8.55e-05
+          }
+        }
+      ],
+      "timing": [],
+      "errors": [],
+      "agent_results": [
+        {
+          "agent": "writer",
+          "content": "**Single-Agent Workflow**\n\nIn a single-agent workflow, a single researcher or agent is responsible for completing all tasks, from data collection to analysis and reporting. This approach is often used in small-scale projects or when the scope of the project is limited.\n\n**Advantages:**\n\n1. **Simplified communication**: There is no need to coordinate with multiple agents, reducing communication overhead.\n2. **Faster decision-making**: A single agent can make decisions quickly without needing to consult with others.\n3. **Lower overhead**: Fewer agents mean lower costs for training, management, and infrastructure.\n\n**Disadvantages:**\n\n1. **Increased workload**: A single agent must handle all tasks, leading to a heavier workload and potential burnout.\n2. **Limited expertise**: A single agent may not have the necessary expertise or skills to complete all tasks, leading to knowledge gaps.\n3. **Reduced scalability**: Single-agent workflows can become bottlenecked as the project grows in scope or complexity.\n\n**Multi-Agent Workflow**\n\nIn a multi-agent workflow, multiple researchers or agents work together to complete tasks, share expertise, and divide workload. This approach is often used in large-scale projects or when the scope of the project is complex.\n\n**Advantages:**\n\n1. **Distributed workload**: Multiple agents can share tasks, reducing the workload for each individual and increasing overall productivity.\n2. **Expertise sharing**: Agents with different skills and expertise can collaborate, reducing knowledge gaps and improving overall quality.\n3. **Scalability**: Multi-agent workflows can handle larger projects and more complex tasks.\n\n**Disadvantages:**\n\n1. **Increased complexity**: Coordinating multiple agents requires more effort and can lead to communication overhead.\n2. **Decision-making challenges**: Multiple agents may have different opinions, leading to slower decision-making and potential conflicts.\n3. **Higher overhead**: More agents mean higher costs for training, management, and infrastructure.\n\n**Trade-offs**\n\nWhen deciding between a single-agent and multi-agent workflow, consider the following trade-offs:\n\n* **Speed vs. quality**: Single-agent workflows may be faster, but multi-agent workflows can produce higher-quality results due to the sharing of expertise.\n* **Cost vs. scalability**: Single-agent workflows are often less expensive, but multi-agent workflows can handle larger projects and more complex tasks.\n* **Autonomy vs. coordination**: Single-agent workflows offer more autonomy, but multi-agent workflows require more coordination and communication.\n\nUltimately, the choice between a single-agent and multi-agent workflow depends on the specific needs and goals of the project.",
+          "metadata": {
+            "input_tokens": 56,
+            "output_tokens": 514,
+            "cost_usd": 8.55e-05,
+            "system_prompt": "You are a single research agent. Answer directly and mention trade-offs.",
+            "user_prompt": "Compare single-agent and multi-agent workflows"
+          }
+        }
+      ]
+    },
+    "real-multi-agent": {
+      "run_name": "real-multi-agent",
+      "latency_seconds": 7.171324599999934,
+      "quality_score": 8.0,
+      "estimated_cost_usd": 0.00017444999999999998,
+      "input_tokens": 638,
+      "output_tokens": 525,
+      "query": "Compare single-agent and multi-agent workflows",
+      "final_answer": "**Comparison of Single-Agent and Multi-Agent Workflows**\n\nSingle-agent workflows are more effective when simple, observable, and bounded [1]. However, multi-agent workflows are useful for splitting specialized work and handling complex tasks, scalability, and dynamic environments [2, 3]. Stateful graphs facilitate agent routing and trace inspection [3].\n\n**Key Takeaways:**\n\n1. **Single-agent workflows**: Effective when simple, observable, and bounded [1].\n2. **Multi-agent workflows**: Useful for complex tasks, scalability, and dynamic environments [2, 3].\n3. **Stateful graphs**: Facilitate agent routing and trace inspection [3].\n\n**Sources:**\n\n[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents\n[2] OpenAI Agents Orchestration - https://developers.openai.com/\n[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/\n\nSources:\n[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents\n[2] OpenAI Agents Orchestration - https://developers.openai.com/\n[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/",
+      "research_notes": "- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.\n- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.\n- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.",
+      "analysis_notes": "**Key Claims:**\n\n1. **Single-agent workflows are more effective when simple, observable, and bounded**: Agent systems perform well when workflows are straightforward, easy to monitor, and have clear boundaries.\n2. **Multi-agent workflows are useful for splitting specialized work**: Handoffs and orchestration enable agents to work together on complex tasks by dividing them into manageable parts.\n3. **Stateful graphs facilitate agent routing and trace inspection**: Using graphs to represent agent interactions makes it easier to route tasks and inspect the workflow.\n\n**Weak Evidence:**\n\n1. **Lack of specific metrics**: The research notes do not provide concrete metrics or data to support the claims.\n2. **Limited context**: The notes focus on general principles and concepts, without providing real-world examples or case studies.\n3. **No comparison of single-agent and multi-agent workflows**: The notes do not directly compare the two approaches, making it difficult to evaluate their relative effectiveness.\n\n**When Multi-agent is Useful:**\n\n1. **Complex tasks**: Multi-agent workflows are suitable for tasks that require specialized skills or expertise.\n2. **Scalability**: When a single agent cannot handle the workload, multi-agent workflows can help distribute tasks and improve efficiency.\n3. **Dynamic environments**: In situations where the workflow or requirements change frequently, multi-agent workflows can adapt more easily to new conditions.\n\nTo strengthen the evidence, it would be helpful to:\n\n1. Provide concrete metrics or data to support the claims.\n2. Include real-world examples or case studies to illustrate the effectiveness of single-agent and multi-agent workflows.\n3. Compare the two approaches directly to evaluate their relative strengths and weaknesses.",
+      "route_history": [
+        "researcher",
+        "analyst",
+        "writer",
+        "done"
+      ],
+      "sources": [
+        {
+          "title": "Building Effective Agents",
+          "url": "https://www.anthropic.com/engineering/building-effective-agents",
+          "snippet": "Agent systems work best when workflows are simple, observable, and bounded.",
+          "metadata": {}
+        },
+        {
+          "title": "OpenAI Agents Orchestration",
+          "url": "https://developers.openai.com/",
+          "snippet": "Handoffs and orchestration help split specialized work across agents.",
+          "metadata": {}
+        },
+        {
+          "title": "LangGraph Concepts",
+          "url": "https://langchain-ai.github.io/langgraph/concepts/",
+          "snippet": "Stateful graphs make agent routing and trace inspection explicit.",
+          "metadata": {}
+        }
+      ],
+      "trace": [
+        {
+          "name": "supervisor",
+          "payload": {
+            "route": "researcher",
+            "iteration": 1
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "supervisor",
+            "duration_seconds": 2.3599999622092582e-05
+          }
+        },
+        {
+          "name": "researcher",
+          "payload": {
+            "sources": 3,
+            "errors": 0
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "researcher",
+            "duration_seconds": 4.9000000217347406e-05
+          }
+        },
+        {
+          "name": "supervisor",
+          "payload": {
+            "route": "analyst",
+            "iteration": 2
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "supervisor",
+            "duration_seconds": 7.300001016119495e-06
+          }
+        },
+        {
+          "name": "analyst",
+          "payload": {
+            "has_analysis": true,
+            "input_tokens": 123,
+            "output_tokens": 330,
+            "cost_usd": 6.795e-05
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "analyst",
+            "duration_seconds": 3.3100975999986986
+          }
+        },
+        {
+          "name": "supervisor",
+          "payload": {
+            "route": "writer",
+            "iteration": 3
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "supervisor",
+            "duration_seconds": 6.100000973674469e-06
+          }
+        },
+        {
+          "name": "writer",
+          "payload": {
+            "has_final_answer": true,
+            "input_tokens": 515,
+            "output_tokens": 195,
+            "cost_usd": 0.0001065
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "writer",
+            "duration_seconds": 3.8610810000009224
+          }
+        },
+        {
+          "name": "supervisor",
+          "payload": {
+            "route": "done",
+            "iteration": 4
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "supervisor",
+            "duration_seconds": 7.599999662488699e-06
+          }
+        }
+      ],
+      "timing": [
+        {
+          "step": "supervisor",
+          "duration_seconds": 2.3599999622092582e-05
+        },
+        {
+          "step": "researcher",
+          "duration_seconds": 4.9000000217347406e-05
+        },
+        {
+          "step": "supervisor",
+          "duration_seconds": 7.300001016119495e-06
+        },
+        {
+          "step": "analyst",
+          "duration_seconds": 3.3100975999986986
+        },
+        {
+          "step": "supervisor",
+          "duration_seconds": 6.100000973674469e-06
+        },
+        {
+          "step": "writer",
+          "duration_seconds": 3.8610810000009224
+        },
+        {
+          "step": "supervisor",
+          "duration_seconds": 7.599999662488699e-06
+        }
+      ],
+      "errors": [],
+      "agent_results": [
+        {
+          "agent": "researcher",
+          "content": "- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.\n- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.\n- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.",
+          "metadata": {}
+        },
+        {
+          "agent": "analyst",
+          "content": "**Key Claims:**\n\n1. **Single-agent workflows are more effective when simple, observable, and bounded**: Agent systems perform well when workflows are straightforward, easy to monitor, and have clear boundaries.\n2. **Multi-agent workflows are useful for splitting specialized work**: Handoffs and orchestration enable agents to work together on complex tasks by dividing them into manageable parts.\n3. **Stateful graphs facilitate agent routing and trace inspection**: Using graphs to represent agent interactions makes it easier to route tasks and inspect the workflow.\n\n**Weak Evidence:**\n\n1. **Lack of specific metrics**: The research notes do not provide concrete metrics or data to support the claims.\n2. **Limited context**: The notes focus on general principles and concepts, without providing real-world examples or case studies.\n3. **No comparison of single-agent and multi-agent workflows**: The notes do not directly compare the two approaches, making it difficult to evaluate their relative effectiveness.\n\n**When Multi-agent is Useful:**\n\n1. **Complex tasks**: Multi-agent workflows are suitable for tasks that require specialized skills or expertise.\n2. **Scalability**: When a single agent cannot handle the workload, multi-agent workflows can help distribute tasks and improve efficiency.\n3. **Dynamic environments**: In situations where the workflow or requirements change frequently, multi-agent workflows can adapt more easily to new conditions.\n\nTo strengthen the evidence, it would be helpful to:\n\n1. Provide concrete metrics or data to support the claims.\n2. Include real-world examples or case studies to illustrate the effectiveness of single-agent and multi-agent workflows.\n3. Compare the two approaches directly to evaluate their relative strengths and weaknesses.",
+          "metadata": {
+            "input_tokens": 123,
+            "output_tokens": 330,
+            "cost_usd": 6.795e-05,
+            "system_prompt": "You are the analyst agent.",
+            "user_prompt": "Query: Compare single-agent and multi-agent workflows\nResearch notes:\n- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.\n- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.\n- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.\nExtract key claims, weak evidence, and when multi-agent is useful."
+          }
+        },
+        {
+          "agent": "writer",
+          "content": "**Comparison of Single-Agent and Multi-Agent Workflows**\n\nSingle-agent workflows are more effective when simple, observable, and bounded [1]. However, multi-agent workflows are useful for splitting specialized work and handling complex tasks, scalability, and dynamic environments [2, 3]. Stateful graphs facilitate agent routing and trace inspection [3].\n\n**Key Takeaways:**\n\n1. **Single-agent workflows**: Effective when simple, observable, and bounded [1].\n2. **Multi-agent workflows**: Useful for complex tasks, scalability, and dynamic environments [2, 3].\n3. **Stateful graphs**: Facilitate agent routing and trace inspection [3].\n\n**Sources:**\n\n[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents\n[2] OpenAI Agents Orchestration - https://developers.openai.com/\n[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/\n\nSources:\n[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents\n[2] OpenAI Agents Orchestration - https://developers.openai.com/\n[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/",
+          "metadata": {
+            "input_tokens": 515,
+            "output_tokens": 195,
+            "cost_usd": 0.0001065,
+            "system_prompt": "You are the writer agent producing the final answer.",
+            "user_prompt": "Query: Compare single-agent and multi-agent workflows\nResearch:\n- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.\n- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.\n- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.\nAnalysis:\n**Key Claims:**\n\n1. **Single-agent workflows are more effective when simple, observable, and bounded**: Agent systems perform well when workflows are straightforward, easy to monitor, and have clear boundaries.\n2. **Multi-agent workflows are useful for splitting specialized work**: Handoffs and orchestration enable agents to work together on complex tasks by dividing them into manageable parts.\n3. **Stateful graphs facilitate agent routing and trace inspection**: Using graphs to represent agent interactions makes it easier to route tasks and inspect the workflow.\n\n**Weak Evidence:**\n\n1. **Lack of specific metrics**: The research notes do not provide concrete metrics or data to support the claims.\n2. **Limited context**: The notes focus on general principles and concepts, without providing real-world examples or case studies.\n3. **No comparison of single-agent and multi-agent workflows**: The notes do not directly compare the two approaches, making it difficult to evaluate their relative effectiveness.\n\n**When Multi-agent is Useful:**\n\n1. **Complex tasks**: Multi-agent workflows are suitable for tasks that require specialized skills or expertise.\n2. **Scalability**: When a single agent cannot handle the workload, multi-agent workflows can help distribute tasks and improve efficiency.\n3. **Dynamic environments**: In situations where the workflow or requirements change frequently, multi-agent workflows can adapt more easily to new conditions.\n\nTo strengthen the evidence, it would be helpful to:\n\n1. Provide concrete metrics or data to support the claims.\n2. Include real-world examples or case studies to illustrate the effectiveness of single-agent and multi-agent workflows.\n3. Compare the two approaches directly to evaluate their relative strengths and weaknesses.\nSources:\n[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents\n[2] OpenAI Agents Orchestration - https://developers.openai.com/\n[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/\nWrite a concise final answer with source references when available."
+          }
+        }
+      ]
+    },
+    "real-fallback": {
+      "run_name": "real-fallback",
+      "latency_seconds": 8.708881800001109,
+      "quality_score": 6.0,
+      "estimated_cost_usd": 0.00018314999999999998,
+      "input_tokens": 584,
+      "output_tokens": 637,
+      "query": "search-error Compare agent workflows",
+      "final_answer": "**Final Answer:**\n\nComparing agent workflows in multi-agent systems is a complex task due to the lack of standardization and limited research in the field. However, it can be useful for identifying the most effective and efficient approaches to problem-solving in complex, distributed, and real-time systems.\n\n**Key Takeaways:**\n\n1. Multi-agent systems are useful for complex problem-solving, distributed problem-solving, and real-time systems.\n2. Comparing agent workflows can help identify the most effective and efficient approaches.\n3. Developing a standard framework, conducting more research, and using case studies are recommended to improve the understanding of agent workflows.\n\n**Low Confidence:**\n\nDue to the lack of external sources and standardization in comparing agent workflows, this analysis is marked with low confidence.\n\n**Recommendations:**\n\n1. Develop a standard framework for comparing agent workflows.\n2. Conduct more research on comparing agent workflows.\n3. Use case studies to demonstrate the effectiveness and efficiency of different agent workflows.\n\n**Sources:**\n\nNo external sources found. This analysis relies on general knowledge and is marked with low confidence.",
+      "research_notes": "No external sources found; continue with general knowledge and mark low confidence.",
+      "analysis_notes": "**Query: Compare agent workflows**\n\n**Research Notes:**\n\nAs there are no external sources found, I will rely on general knowledge and mark low confidence in the following analysis.\n\n**Key Claims:**\n\n1. **Multi-agent systems**: In a multi-agent system, multiple agents work together to achieve a common goal. This can lead to more efficient and effective problem-solving.\n2. **Agent workflows**: Agent workflows refer to the sequence of actions and interactions between agents in a multi-agent system.\n3. **Comparison of agent workflows**: Comparing agent workflows can help identify the most effective and efficient approaches to problem-solving in multi-agent systems.\n\n**Weak Evidence:**\n\n1. **Lack of standardization**: There is no standard framework for comparing agent workflows, making it challenging to evaluate and compare different approaches.\n2. **Complexity of multi-agent systems**: Multi-agent systems are inherently complex, making it difficult to analyze and compare agent workflows.\n3. **Limited research**: There is limited research on comparing agent workflows, which makes it challenging to draw conclusions.\n\n**When Multi-Agent is Useful:**\n\n1. **Complex problem-solving**: Multi-agent systems are useful when dealing with complex problems that require the coordination of multiple agents.\n2. **Distributed problem-solving**: Multi-agent systems are useful when solving problems that require the distribution of tasks among multiple agents.\n3. **Real-time systems**: Multi-agent systems are useful in real-time systems where quick decision-making and action are required.\n\n**Low Confidence:**\n\nDue to the lack of external sources and standardization in comparing agent workflows, I have marked this analysis with low confidence. Further research is needed to provide more accurate and reliable information.\n\n**Recommendations:**\n\n1. **Develop a standard framework**: Develop a standard framework for comparing agent workflows to facilitate the evaluation and comparison of different approaches.\n2. **Conduct more research**: Conduct more research on comparing agent workflows to provide a more comprehensive understanding of the topic.\n3. **Use case studies**: Use case studies to demonstrate the effectiveness and efficiency of different agent workflows in real-world scenarios.",
+      "route_history": [
+        "researcher",
+        "analyst",
+        "writer",
+        "done"
+      ],
+      "sources": [],
+      "trace": [
+        {
+          "name": "supervisor",
+          "payload": {
+            "route": "researcher",
+            "iteration": 1
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "supervisor",
+            "duration_seconds": 2.099999619531445e-06
+          }
+        },
+        {
+          "name": "researcher",
+          "payload": {
+            "sources": 0,
+            "errors": 1
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "researcher",
+            "duration_seconds": 1.6400001186411828e-05
+          }
+        },
+        {
+          "name": "supervisor",
+          "payload": {
+            "route": "analyst",
+            "iteration": 2
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "supervisor",
+            "duration_seconds": 1.4999986888142303e-06
+          }
+        },
+        {
+          "name": "analyst",
+          "payload": {
+            "has_analysis": true,
+            "input_tokens": 80,
+            "output_tokens": 418,
+            "cost_usd": 7.469999999999999e-05
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "analyst",
+            "duration_seconds": 5.769974700000603
+          }
+        },
+        {
+          "name": "supervisor",
+          "payload": {
+            "route": "writer",
+            "iteration": 3
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "supervisor",
+            "duration_seconds": 6.599999323952943e-06
+          }
+        },
+        {
+          "name": "writer",
+          "payload": {
+            "has_final_answer": true,
+            "input_tokens": 504,
+            "output_tokens": 219,
+            "cost_usd": 0.00010845
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "writer",
+            "duration_seconds": 2.938837199999398
+          }
+        },
+        {
+          "name": "supervisor",
+          "payload": {
+            "route": "done",
+            "iteration": 4
+          }
+        },
+        {
+          "name": "timing",
+          "payload": {
+            "step": "supervisor",
+            "duration_seconds": 8.299999535665847e-06
+          }
+        }
+      ],
+      "timing": [
+        {
+          "step": "supervisor",
+          "duration_seconds": 2.099999619531445e-06
+        },
+        {
+          "step": "researcher",
+          "duration_seconds": 1.6400001186411828e-05
+        },
+        {
+          "step": "supervisor",
+          "duration_seconds": 1.4999986888142303e-06
+        },
+        {
+          "step": "analyst",
+          "duration_seconds": 5.769974700000603
+        },
+        {
+          "step": "supervisor",
+          "duration_seconds": 6.599999323952943e-06
+        },
+        {
+          "step": "writer",
+          "duration_seconds": 2.938837199999398
+        },
+        {
+          "step": "supervisor",
+          "duration_seconds": 8.299999535665847e-06
+        }
+      ],
+      "errors": [
+        "researcher search failed: Mock search failure requested by query"
+      ],
+      "agent_results": [
+        {
+          "agent": "researcher",
+          "content": "No external sources found; continue with general knowledge and mark low confidence.",
+          "metadata": {}
+        },
+        {
+          "agent": "analyst",
+          "content": "**Query: Compare agent workflows**\n\n**Research Notes:**\n\nAs there are no external sources found, I will rely on general knowledge and mark low confidence in the following analysis.\n\n**Key Claims:**\n\n1. **Multi-agent systems**: In a multi-agent system, multiple agents work together to achieve a common goal. This can lead to more efficient and effective problem-solving.\n2. **Agent workflows**: Agent workflows refer to the sequence of actions and interactions between agents in a multi-agent system.\n3. **Comparison of agent workflows**: Comparing agent workflows can help identify the most effective and efficient approaches to problem-solving in multi-agent systems.\n\n**Weak Evidence:**\n\n1. **Lack of standardization**: There is no standard framework for comparing agent workflows, making it challenging to evaluate and compare different approaches.\n2. **Complexity of multi-agent systems**: Multi-agent systems are inherently complex, making it difficult to analyze and compare agent workflows.\n3. **Limited research**: There is limited research on comparing agent workflows, which makes it challenging to draw conclusions.\n\n**When Multi-Agent is Useful:**\n\n1. **Complex problem-solving**: Multi-agent systems are useful when dealing with complex problems that require the coordination of multiple agents.\n2. **Distributed problem-solving**: Multi-agent systems are useful when solving problems that require the distribution of tasks among multiple agents.\n3. **Real-time systems**: Multi-agent systems are useful in real-time systems where quick decision-making and action are required.\n\n**Low Confidence:**\n\nDue to the lack of external sources and standardization in comparing agent workflows, I have marked this analysis with low confidence. Further research is needed to provide more accurate and reliable information.\n\n**Recommendations:**\n\n1. **Develop a standard framework**: Develop a standard framework for comparing agent workflows to facilitate the evaluation and comparison of different approaches.\n2. **Conduct more research**: Conduct more research on comparing agent workflows to provide a more comprehensive understanding of the topic.\n3. **Use case studies**: Use case studies to demonstrate the effectiveness and efficiency of different agent workflows in real-world scenarios.",
+          "metadata": {
+            "input_tokens": 80,
+            "output_tokens": 418,
+            "cost_usd": 7.469999999999999e-05,
+            "system_prompt": "You are the analyst agent.",
+            "user_prompt": "Query: search-error Compare agent workflows\nResearch notes:\nNo external sources found; continue with general knowledge and mark low confidence.\nExtract key claims, weak evidence, and when multi-agent is useful."
+          }
+        },
+        {
+          "agent": "writer",
+          "content": "**Final Answer:**\n\nComparing agent workflows in multi-agent systems is a complex task due to the lack of standardization and limited research in the field. However, it can be useful for identifying the most effective and efficient approaches to problem-solving in complex, distributed, and real-time systems.\n\n**Key Takeaways:**\n\n1. Multi-agent systems are useful for complex problem-solving, distributed problem-solving, and real-time systems.\n2. Comparing agent workflows can help identify the most effective and efficient approaches.\n3. Developing a standard framework, conducting more research, and using case studies are recommended to improve the understanding of agent workflows.\n\n**Low Confidence:**\n\nDue to the lack of external sources and standardization in comparing agent workflows, this analysis is marked with low confidence.\n\n**Recommendations:**\n\n1. Develop a standard framework for comparing agent workflows.\n2. Conduct more research on comparing agent workflows.\n3. Use case studies to demonstrate the effectiveness and efficiency of different agent workflows.\n\n**Sources:**\n\nNo external sources found. This analysis relies on general knowledge and is marked with low confidence.",
+          "metadata": {
+            "input_tokens": 504,
+            "output_tokens": 219,
+            "cost_usd": 0.00010845,
+            "system_prompt": "You are the writer agent producing the final answer.",
+            "user_prompt": "Query: search-error Compare agent workflows\nResearch:\nNo external sources found; continue with general knowledge and mark low confidence.\nAnalysis:\n**Query: Compare agent workflows**\n\n**Research Notes:**\n\nAs there are no external sources found, I will rely on general knowledge and mark low confidence in the following analysis.\n\n**Key Claims:**\n\n1. **Multi-agent systems**: In a multi-agent system, multiple agents work together to achieve a common goal. This can lead to more efficient and effective problem-solving.\n2. **Agent workflows**: Agent workflows refer to the sequence of actions and interactions between agents in a multi-agent system.\n3. **Comparison of agent workflows**: Comparing agent workflows can help identify the most effective and efficient approaches to problem-solving in multi-agent systems.\n\n**Weak Evidence:**\n\n1. **Lack of standardization**: There is no standard framework for comparing agent workflows, making it challenging to evaluate and compare different approaches.\n2. **Complexity of multi-agent systems**: Multi-agent systems are inherently complex, making it difficult to analyze and compare agent workflows.\n3. **Limited research**: There is limited research on comparing agent workflows, which makes it challenging to draw conclusions.\n\n**When Multi-Agent is Useful:**\n\n1. **Complex problem-solving**: Multi-agent systems are useful when dealing with complex problems that require the coordination of multiple agents.\n2. **Distributed problem-solving**: Multi-agent systems are useful when solving problems that require the distribution of tasks among multiple agents.\n3. **Real-time systems**: Multi-agent systems are useful in real-time systems where quick decision-making and action are required.\n\n**Low Confidence:**\n\nDue to the lack of external sources and standardization in comparing agent workflows, I have marked this analysis with low confidence. Further research is needed to provide more accurate and reliable information.\n\n**Recommendations:**\n\n1. **Develop a standard framework**: Develop a standard framework for comparing agent workflows to facilitate the evaluation and comparison of different approaches.\n2. **Conduct more research**: Conduct more research on comparing agent workflows to provide a more comprehensive understanding of the topic.\n3. **Use case studies**: Use case studies to demonstrate the effectiveness and efficiency of different agent workflows in real-world scenarios.\nSources:\nNo sources\nWrite a concise final answer with source references when available."
+          }
+        }
+      ]
+    }
+  }
+}

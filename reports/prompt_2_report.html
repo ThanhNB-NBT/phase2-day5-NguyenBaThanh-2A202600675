@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prompt 2: Research Briefing on Multi-Agent LLMs</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #fff;
+      --text: #18202a;
+      --muted: #657184;
+      --line: #d9dee7;
+      --accent: #0f766e;
+      --bad: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.55 Arial, sans-serif; color: var(--text); background: var(--bg); }
+    header, main { max-width: 1240px; margin: 0 auto; padding: 24px; }
+    h1, h2 { margin: 0 0 12px; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 20px; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 14px 0; }
+    .metric strong { display: block; font-size: 28px; color: var(--accent); }
+    .lead { max-width: 900px; }
+    table { width: 100%; border-collapse: collapse; background: var(--panel); }
+    th, td { border: 1px solid var(--line); padding: 10px; vertical-align: top; text-align: left; }
+    th { background: #eef2f7; }
+    code { display: block; white-space: pre-wrap; color: var(--muted); }
+    ul { padding-left: 20px; }
+    .sources span { display: block; color: var(--muted); }
+    .errors li { color: var(--bad); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e6fffb; color: var(--accent); }
+    .help {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      margin-left: 6px;
+      border-radius: 50%;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: help;
+    }
+    @media (max-width: 840px) { .grid, .compare { grid-template-columns: 1fr; } header, main { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="badge">Mock data</span>
+    <h1>Prompt 2: Research Briefing on Multi-Agent LLMs</h1>
+    <p class="muted lead">Report này chạy cùng một prompt qua hai luồng: baseline một agent và multi-agent có Supervisor, Researcher, Analyst, Writer. HTML render từ <code>reports/prompt_2_report.json</code>. Cost là ước tính từ token usage và rate cấu hình.</p>
+  </header>
+  <main>
+    <section class="grid">
+      <div class="panel metric"><span>Multi input tokens <span class="help" title="Tổng prompt tokens của các LLM call trong multi-agent run.">?</span></span><strong>514</strong></div>
+      <div class="panel metric"><span>Multi output tokens <span class="help" title="Tổng completion tokens do model sinh ra trong multi-agent run.">?</span></span><strong>24</strong></div>
+      <div class="panel metric"><span>Multi latency <span class="help" title="Wall-clock time từ lúc bắt đầu multi-agent run tới khi có final answer.">?</span></span><strong>0.000s</strong></div>
+      <div class="panel metric"><span>Multi estimated cost <span class="help" title="Ước tính từ token usage nhân với LLM_INPUT/OUTPUT_COST_PER_1M_TOKENS.">?</span></span><strong>$0.000000</strong></div>
+    </section>
+
+    <section class="panel">
+      <h2>Benchmark Metrics <span class="help" title="Quality là điểm heuristic: final answer = 7, có sources +1, có errors trừ tối đa 2. Không phải judge LLM.">?</span></h2>
+      <table>
+        <thead><tr><th>Run</th><th>Latency <span class="help" title="Tổng thời gian chạy của run.">?</span></th><th>Input tokens <span class="help" title="Prompt tokens.">?</span></th><th>Output tokens <span class="help" title="Completion tokens.">?</span></th><th>Estimated cost <span class="help" title="Chi phí ước tính, không phải hóa đơn provider.">?</span></th><th>Quality <span class="help" title="Heuristic nội bộ để so sánh nhanh.">?</span></th><th>Sources <span class="help" title="Số nguồn Researcher thu được.">?</span></th><th>Errors <span class="help" title="Số lỗi đã được fallback và ghi lại.">?</span></th></tr></thead>
+        <tbody><tr>
+          <td>mock-baseline</td>
+          <td>0.000</td>
+          <td>189</td>
+          <td>12</td>
+          <td>0.000000</td>
+          <td>7.0</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <td>mock-multi-agent</td>
+          <td>0.000</td>
+          <td>514</td>
+          <td>24</td>
+          <td>0.000000</td>
+          <td>8.0</td>
+          <td>3</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <td>mock-fallback</td>
+          <td>0.000</td>
+          <td>0</td>
+          <td>0</td>
+          <td>0.000000</td>
+          <td>5.0</td>
+          <td>0</td>
+          <td>3</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Single vs Multi-Agent</h2>
+      <p class="muted">Bảng này là phần đọc nhanh: multi-agent thường tốn thêm token/thời gian nhưng có nguồn, trace và chia vai rõ hơn.</p>
+      <table>
+        <thead><tr><th>Metric</th><th>Single Agent</th><th>Multi Agent</th></tr></thead>
+        <tbody><tr>
+          <th>Latency</th>
+          <td>0.000s</td>
+          <td>0.000s</td>
+        </tr>
+<tr>
+          <th>Input tokens</th>
+          <td>189</td>
+          <td>514</td>
+        </tr>
+<tr>
+          <th>Output tokens</th>
+          <td>12</td>
+          <td>24</td>
+        </tr>
+<tr>
+          <th>Estimated cost</th>
+          <td>$0.000000</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <th>Sources</th>
+          <td>0</td>
+          <td>3</td>
+        </tr>
+<tr>
+          <th>Trace steps</th>
+          <td>1</td>
+          <td>14</td>
+        </tr>
+<tr>
+          <th>Errors</th>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <th>Routes</th>
+          <td>baseline</td>
+          <td>researcher, analyst, writer, done</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Prompts Used <span class="help" title="Các system/user prompts thực tế đã gửi vào LLM client cho baseline, analyst và writer.">?</span></h2>
+      <table>
+        <thead><tr><th>Run</th><th>Agent</th><th>System prompt</th><th>User prompt</th></tr></thead>
+        <tbody><tr>
+                  <td>Single Agent</td>
+                  <td>writer</td>
+                  <td><code>You are a single research agent. Answer directly and mention trade-offs.</code></td>
+                  <td><code>You are helping a PhD student prepare a research briefing on the topic:<br><br>&quot;Do multi-agent LLM systems actually outperform single-agent systems on complex tasks?&quot;<br><br>Your task is not just to summarize the topic. You must produce a structured research briefing that:<br>1. Defines the main claim precisely<br>2. Breaks the literature into major positions or schools of thought<br>3. Identifies arguments supporting the claim<br>4. Identifies arguments challenging the claim<br>5. Explains where empirical evidence is weak, incomplete, or confounded<br>6. Distinguishes between true multi-agent gains and gains caused by other factors such as more tokens, more prompt engineering, or repeated self-reflection<br>7. Proposes 3 concrete experiments that could better resolve the debate<br>8. Ends with a balanced final judgment<br><br>Constraints:<br>- Do not write a generic overview<br>- Explicitly discuss what kinds of evidence would count as convincing<br>- The final judgment must include uncertainty and unresolved issues<br>- Organize the answer so it could be used as speaking notes for a research group meeting<br><br>Output format:<br>- Core question<br>- Main positions<br>- Evidence for<br>- Evidence against<br>- Methodological concerns<br>- Proposed experiments<br>- Final judgment</code></td>
+                </tr><tr>
+                  <td>Multi Agent</td>
+                  <td>analyst</td>
+                  <td><code>You are the analyst agent.</code></td>
+                  <td><code>Query: You are helping a PhD student prepare a research briefing on the topic:<br><br>&quot;Do multi-agent LLM systems actually outperform single-agent systems on complex tasks?&quot;<br><br>Your task is not just to summarize the topic. You must produce a structured research briefing that:<br>1. Defines the main claim precisely<br>2. Breaks the literature into major positions or schools of thought<br>3. Identifies arguments supporting the claim<br>4. Identifies arguments challenging the claim<br>5. Explains where empirical evidence is weak, incomplete, or confounded<br>6. Distinguishes between true multi-agent gains and gains caused by other factors such as more tokens, more prompt engineering, or repeated self-reflection<br>7. Proposes 3 concrete experiments that could better resolve the debate<br>8. Ends with a balanced final judgment<br><br>Constraints:<br>- Do not write a generic overview<br>- Explicitly discuss what kinds of evidence would count as convincing<br>- The final judgment must include uncertainty and unresolved issues<br>- Organize the answer so it could be used as speaking notes for a research group meeting<br><br>Output format:<br>- Core question<br>- Main positions<br>- Evidence for<br>- Evidence against<br>- Methodological concerns<br>- Proposed experiments<br>- Final judgment<br>Research notes:<br>- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.<br>- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.<br>- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.<br>Extract key claims, weak evidence, and when multi-agent is useful.</code></td>
+                </tr>
+<tr>
+                  <td>Multi Agent</td>
+                  <td>writer</td>
+                  <td><code>You are the writer agent producing the final answer.</code></td>
+                  <td><code>Query: You are helping a PhD student prepare a research briefing on the topic:<br><br>&quot;Do multi-agent LLM systems actually outperform single-agent systems on complex tasks?&quot;<br><br>Your task is not just to summarize the topic. You must produce a structured research briefing that:<br>1. Defines the main claim precisely<br>2. Breaks the literature into major positions or schools of thought<br>3. Identifies arguments supporting the claim<br>4. Identifies arguments challenging the claim<br>5. Explains where empirical evidence is weak, incomplete, or confounded<br>6. Distinguishes between true multi-agent gains and gains caused by other factors such as more tokens, more prompt engineering, or repeated self-reflection<br>7. Proposes 3 concrete experiments that could better resolve the debate<br>8. Ends with a balanced final judgment<br><br>Constraints:<br>- Do not write a generic overview<br>- Explicitly discuss what kinds of evidence would count as convincing<br>- The final judgment must include uncertainty and unresolved issues<br>- Organize the answer so it could be used as speaking notes for a research group meeting<br><br>Output format:<br>- Core question<br>- Main positions<br>- Evidence for<br>- Evidence against<br>- Methodological concerns<br>- Proposed experiments<br>- Final judgment<br>Research:<br>- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.<br>- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.<br>- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.<br>Analysis:<br>Final answer: multi-agent workflows help when tasks need research, analysis, and synthesis.<br>Sources:<br>[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents<br>[2] OpenAI Agents Orchestration - https://developers.openai.com/<br>[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/<br>Write a concise final answer with source references when available.</code></td>
+                </tr></tbody>
+      </table>
+    </section>
+
+    <section class="compare">
+      <div class="panel">
+        <h2>Single Agent Output</h2>
+        <p>Final answer: multi-agent workflows help when tasks need research, analysis, and synthesis.</p>
+      </div>
+      <div class="panel">
+        <h2>Multi Agent Output</h2>
+        <p>Final answer: multi-agent workflows help when tasks need research, analysis, and synthesis.<br><br>Sources:<br>[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents<br>[2] OpenAI Agents Orchestration - https://developers.openai.com/<br>[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Luồng Chạy Dễ Đọc</h2>
+      <p class="muted">Mỗi dòng dưới đây giải thích bước đó làm gì, nhận input gì, tạo output gì, tốn bao nhiêu thời gian và token.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Bước</th>
+            <th>Làm gì</th>
+            <th>Input</th>
+            <th>Output</th>
+            <th>Thời gian</th>
+            <th>Input tokens</th>
+            <th>Output tokens</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody><tr>
+          <td><b>Baseline</b></td>
+          <td>Một agent trả lời trực tiếp, dùng làm mốc so sánh.</td>
+          <td>Query gốc</td>
+          <td>Final answer baseline</td>
+          <td>0.000084s</td>
+          <td>189</td>
+          <td>12</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Supervisor</b></td>
+          <td>Kiểm tra state và chọn agent tiếp theo.</td>
+          <td>ResearchState hiện tại</td>
+          <td>Route history: researcher, analyst, writer, done</td>
+          <td>0.000015s</td>
+          <td>0</td>
+          <td>0</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Researcher</b></td>
+          <td>Tìm nguồn và viết research notes.</td>
+          <td>Query + max_sources</td>
+          <td>3 sources, research_notes</td>
+          <td>0.000029s</td>
+          <td>0</td>
+          <td>0</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Analyst</b></td>
+          <td>Phân tích notes thành insight/trade-off.</td>
+          <td>research_notes</td>
+          <td>analysis_notes</td>
+          <td>0.000070s</td>
+          <td>242</td>
+          <td>12</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Writer</b></td>
+          <td>Tổng hợp final answer và gắn source references.</td>
+          <td>research_notes + analysis_notes + sources</td>
+          <td>final_answer</td>
+          <td>0.000046s</td>
+          <td>272</td>
+          <td>12</td>
+          <td>$0.000000</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Thời Gian Theo Event</h2>
+      <p class="muted">Đây là timing raw theo từng event được ghi trong trace của multi-agent.</p>
+      <table><thead><tr><th>Step</th><th>Duration (s)</th></tr></thead><tbody><tr><td>supervisor</td><td>0.000005</td></tr>
+<tr><td>researcher</td><td>0.000029</td></tr>
+<tr><td>supervisor</td><td>0.000003</td></tr>
+<tr><td>analyst</td><td>0.000070</td></tr>
+<tr><td>supervisor</td><td>0.000004</td></tr>
+<tr><td>writer</td><td>0.000046</td></tr>
+<tr><td>supervisor</td><td>0.000003</td></tr></tbody></table>
+    </section>
+
+    <section class="panel">
+      <h2>Trace Raw Của Multi-Agent</h2>
+      <p class="muted">Dùng phần này để debug chi tiết route, token usage, source count và payload nội bộ.</p>
+      <table><thead><tr><th>Event</th><th>Payload</th></tr></thead><tbody><tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;researcher&quot;, &quot;iteration&quot;: 1}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 5.199999577598646e-06}</code></td></tr>
+<tr><td>researcher</td><td><code>{&quot;sources&quot;: 3, &quot;errors&quot;: 0}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;researcher&quot;, &quot;duration_seconds&quot;: 2.9200000426499173e-05}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;analyst&quot;, &quot;iteration&quot;: 2}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 3.2999996619764715e-06}</code></td></tr>
+<tr><td>analyst</td><td><code>{&quot;has_analysis&quot;: true, &quot;input_tokens&quot;: 242, &quot;output_tokens&quot;: 12, &quot;cost_usd&quot;: 0.0}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;analyst&quot;, &quot;duration_seconds&quot;: 7.029999869700987e-05}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;writer&quot;, &quot;iteration&quot;: 3}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 3.700000888784416e-06}</code></td></tr>
+<tr><td>writer</td><td><code>{&quot;has_final_answer&quot;: true, &quot;input_tokens&quot;: 272, &quot;output_tokens&quot;: 12, &quot;cost_usd&quot;: 0.0}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;writer&quot;, &quot;duration_seconds&quot;: 4.55999997939216e-05}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;done&quot;, &quot;iteration&quot;: 4}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 2.800001311697997e-06}</code></td></tr></tbody></table>
+    </section>
+
+    <section class="panel">
+      <h2>Research Sources</h2>
+      <ul class="sources"><li><a href="https://www.anthropic.com/engineering/building-effective-agents">Building Effective Agents</a><span>Agent systems work best when workflows are simple, observable, and bounded.</span></li>
+<li><a href="https://developers.openai.com/">OpenAI Agents Orchestration</a><span>Handoffs and orchestration help split specialized work across agents.</span></li>
+<li><a href="https://langchain-ai.github.io/langgraph/concepts/">LangGraph Concepts</a><span>Stateful graphs make agent routing and trace inspection explicit.</span></li></ul>
+    </section>
+
+    <section class="panel">
+      <h2>Fallback Run</h2>
+      <p class="muted">Run này cố tình dùng query lỗi để chứng minh workflow không chết giữa chừng.</p>
+      <p><b>Query:</b> search-error Compare agent workflows</p>
+      <p><b>Output:</b> Fallback answer: the workflow completed with degraded confidence because one API step failed.</p>
+      <table><thead><tr><th>Step</th><th>Duration (s)</th></tr></thead><tbody><tr><td>supervisor</td><td>0.000003</td></tr>
+<tr><td>researcher</td><td>0.000016</td></tr>
+<tr><td>supervisor</td><td>0.000002</td></tr>
+<tr><td>analyst</td><td>0.000012</td></tr>
+<tr><td>supervisor</td><td>0.000002</td></tr>
+<tr><td>writer</td><td>0.000011</td></tr>
+<tr><td>supervisor</td><td>0.000002</td></tr></tbody></table>
+      <ul class="errors"><li>researcher search failed: Mock search failure requested by query</li>
+<li>analyst llm failed: Mock LLM failure requested by prompt</li>
+<li>writer llm failed: Mock LLM failure requested by prompt</li></ul>
+    </section>
+  </main>
+</body>
+</html>

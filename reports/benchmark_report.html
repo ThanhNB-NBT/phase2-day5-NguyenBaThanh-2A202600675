@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multi-Agent Research Benchmark</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #fff;
+      --text: #18202a;
+      --muted: #657184;
+      --line: #d9dee7;
+      --accent: #0f766e;
+      --bad: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.55 Arial, sans-serif; color: var(--text); background: var(--bg); }
+    header, main { max-width: 1240px; margin: 0 auto; padding: 24px; }
+    h1, h2 { margin: 0 0 12px; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 20px; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 14px 0; }
+    .metric strong { display: block; font-size: 28px; color: var(--accent); }
+    .lead { max-width: 900px; }
+    table { width: 100%; border-collapse: collapse; background: var(--panel); }
+    th, td { border: 1px solid var(--line); padding: 10px; vertical-align: top; text-align: left; }
+    th { background: #eef2f7; }
+    code { display: block; white-space: pre-wrap; color: var(--muted); }
+    ul { padding-left: 20px; }
+    .sources span { display: block; color: var(--muted); }
+    .errors li { color: var(--bad); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e6fffb; color: var(--accent); }
+    .help {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      margin-left: 6px;
+      border-radius: 50%;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: help;
+    }
+    @media (max-width: 840px) { .grid, .compare { grid-template-columns: 1fr; } header, main { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="badge">Real API data</span>
+    <h1>Multi-Agent Research Benchmark</h1>
+    <p class="muted lead">Report này chạy cùng một prompt qua hai luồng: baseline một agent và multi-agent có Supervisor, Researcher, Analyst, Writer. HTML render từ <code>reports/benchmark_report.json</code>. Cost là ước tính từ token usage và rate cấu hình.</p>
+  </header>
+  <main>
+    <section class="grid">
+      <div class="panel metric"><span>Multi input tokens <span class="help" title="Tổng prompt tokens của các LLM call trong multi-agent run.">?</span></span><strong>638</strong></div>
+      <div class="panel metric"><span>Multi output tokens <span class="help" title="Tổng completion tokens do model sinh ra trong multi-agent run.">?</span></span><strong>525</strong></div>
+      <div class="panel metric"><span>Multi latency <span class="help" title="Wall-clock time từ lúc bắt đầu multi-agent run tới khi có final answer.">?</span></span><strong>7.171s</strong></div>
+      <div class="panel metric"><span>Multi estimated cost <span class="help" title="Ước tính từ token usage nhân với LLM_INPUT/OUTPUT_COST_PER_1M_TOKENS.">?</span></span><strong>$0.000174</strong></div>
+    </section>
+
+    <section class="panel">
+      <h2>Benchmark Metrics <span class="help" title="Quality là điểm heuristic: final answer = 7, có sources +1, có errors trừ tối đa 2. Không phải judge LLM.">?</span></h2>
+      <table>
+        <thead><tr><th>Run</th><th>Latency <span class="help" title="Tổng thời gian chạy của run.">?</span></th><th>Input tokens <span class="help" title="Prompt tokens.">?</span></th><th>Output tokens <span class="help" title="Completion tokens.">?</span></th><th>Estimated cost <span class="help" title="Chi phí ước tính, không phải hóa đơn provider.">?</span></th><th>Quality <span class="help" title="Heuristic nội bộ để so sánh nhanh.">?</span></th><th>Sources <span class="help" title="Số nguồn Researcher thu được.">?</span></th><th>Errors <span class="help" title="Số lỗi đã được fallback và ghi lại.">?</span></th></tr></thead>
+        <tbody><tr>
+          <td>real-baseline</td>
+          <td>5.235</td>
+          <td>56</td>
+          <td>514</td>
+          <td>0.000086</td>
+          <td>7.0</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <td>real-multi-agent</td>
+          <td>7.171</td>
+          <td>638</td>
+          <td>525</td>
+          <td>0.000174</td>
+          <td>8.0</td>
+          <td>3</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <td>real-fallback</td>
+          <td>8.709</td>
+          <td>584</td>
+          <td>637</td>
+          <td>0.000183</td>
+          <td>6.0</td>
+          <td>0</td>
+          <td>1</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Single vs Multi-Agent</h2>
+      <p class="muted">Bảng này là phần đọc nhanh: multi-agent thường tốn thêm token/thời gian nhưng có nguồn, trace và chia vai rõ hơn.</p>
+      <table>
+        <thead><tr><th>Metric</th><th>Single Agent</th><th>Multi Agent</th></tr></thead>
+        <tbody><tr>
+          <th>Latency</th>
+          <td>5.235s</td>
+          <td>7.171s</td>
+        </tr>
+<tr>
+          <th>Input tokens</th>
+          <td>56</td>
+          <td>638</td>
+        </tr>
+<tr>
+          <th>Output tokens</th>
+          <td>514</td>
+          <td>525</td>
+        </tr>
+<tr>
+          <th>Estimated cost</th>
+          <td>$0.000086</td>
+          <td>$0.000174</td>
+        </tr>
+<tr>
+          <th>Sources</th>
+          <td>0</td>
+          <td>3</td>
+        </tr>
+<tr>
+          <th>Trace steps</th>
+          <td>1</td>
+          <td>14</td>
+        </tr>
+<tr>
+          <th>Errors</th>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <th>Routes</th>
+          <td>baseline</td>
+          <td>researcher, analyst, writer, done</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Prompts Used <span class="help" title="Các system/user prompts thực tế đã gửi vào LLM client cho baseline, analyst và writer.">?</span></h2>
+      <table>
+        <thead><tr><th>Run</th><th>Agent</th><th>System prompt</th><th>User prompt</th></tr></thead>
+        <tbody><tr>
+                  <td>Single Agent</td>
+                  <td>writer</td>
+                  <td><code>You are a single research agent. Answer directly and mention trade-offs.</code></td>
+                  <td><code>Compare single-agent and multi-agent workflows</code></td>
+                </tr><tr>
+                  <td>Multi Agent</td>
+                  <td>analyst</td>
+                  <td><code>You are the analyst agent.</code></td>
+                  <td><code>Query: Compare single-agent and multi-agent workflows<br>Research notes:<br>- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.<br>- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.<br>- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.<br>Extract key claims, weak evidence, and when multi-agent is useful.</code></td>
+                </tr>
+<tr>
+                  <td>Multi Agent</td>
+                  <td>writer</td>
+                  <td><code>You are the writer agent producing the final answer.</code></td>
+                  <td><code>Query: Compare single-agent and multi-agent workflows<br>Research:<br>- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.<br>- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.<br>- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.<br>Analysis:<br>**Key Claims:**<br><br>1. **Single-agent workflows are more effective when simple, observable, and bounded**: Agent systems perform well when workflows are straightforward, easy to monitor, and have clear boundaries.<br>2. **Multi-agent workflows are useful for splitting specialized work**: Handoffs and orchestration enable agents to work together on complex tasks by dividing them into manageable parts.<br>3. **Stateful graphs facilitate agent routing and trace inspection**: Using graphs to represent agent interactions makes it easier to route tasks and inspect the workflow.<br><br>**Weak Evidence:**<br><br>1. **Lack of specific metrics**: The research notes do not provide concrete metrics or data to support the claims.<br>2. **Limited context**: The notes focus on general principles and concepts, without providing real-world examples or case studies.<br>3. **No comparison of single-agent and multi-agent workflows**: The notes do not directly compare the two approaches, making it difficult to evaluate their relative effectiveness.<br><br>**When Multi-agent is Useful:**<br><br>1. **Complex tasks**: Multi-agent workflows are suitable for tasks that require specialized skills or expertise.<br>2. **Scalability**: When a single agent cannot handle the workload, multi-agent workflows can help distribute tasks and improve efficiency.<br>3. **Dynamic environments**: In situations where the workflow or requirements change frequently, multi-agent workflows can adapt more easily to new conditions.<br><br>To strengthen the evidence, it would be helpful to:<br><br>1. Provide concrete metrics or data to support the claims.<br>2. Include real-world examples or case studies to illustrate the effectiveness of single-agent and multi-agent workflows.<br>3. Compare the two approaches directly to evaluate their relative strengths and weaknesses.<br>Sources:<br>[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents<br>[2] OpenAI Agents Orchestration - https://developers.openai.com/<br>[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/<br>Write a concise final answer with source references when available.</code></td>
+                </tr></tbody>
+      </table>
+    </section>
+
+    <section class="compare">
+      <div class="panel">
+        <h2>Single Agent Output</h2>
+        <p>**Single-Agent Workflow**<br><br>In a single-agent workflow, a single researcher or agent is responsible for completing all tasks, from data collection to analysis and reporting. This approach is often used in small-scale projects or when the scope of the project is limited.<br><br>**Advantages:**<br><br>1. **Simplified communication**: There is no need to coordinate with multiple agents, reducing communication overhead.<br>2. **Faster decision-making**: A single agent can make decisions quickly without needing to consult with others.<br>3. **Lower overhead**: Fewer agents mean lower costs for training, management, and infrastructure.<br><br>**Disadvantages:**<br><br>1. **Increased workload**: A single agent must handle all tasks, leading to a heavier workload and potential burnout.<br>2. **Limited expertise**: A single agent may not have the necessary expertise or skills to complete all tasks, leading to knowledge gaps.<br>3. **Reduced scalability**: Single-agent workflows can become bottlenecked as the project grows in scope or complexity.<br><br>**Multi-Agent Workflow**<br><br>In a multi-agent workflow, multiple researchers or agents work together to complete tasks, share expertise, and divide workload. This approach is often used in large-scale projects or when the scope of the project is complex.<br><br>**Advantages:**<br><br>1. **Distributed workload**: Multiple agents can share tasks, reducing the workload for each individual and increasing overall productivity.<br>2. **Expertise sharing**: Agents with different skills and expertise can collaborate, reducing knowledge gaps and improving overall quality.<br>3. **Scalability**: Multi-agent workflows can handle larger projects and more complex tasks.<br><br>**Disadvantages:**<br><br>1. **Increased complexity**: Coordinating multiple agents requires more effort and can lead to communication overhead.<br>2. **Decision-making challenges**: Multiple agents may have different opinions, leading to slower decision-making and potential conflicts.<br>3. **Higher overhead**: More agents mean higher costs for training, management, and infrastructure.<br><br>**Trade-offs**<br><br>When deciding between a single-agent and multi-agent workflow, consider the following trade-offs:<br><br>* **Speed vs. quality**: Single-agent workflows may be faster, but multi-agent workflows can produce higher-quality results due to the sharing of expertise.<br>* **Cost vs. scalability**: Single-agent workflows are often less expensive, but multi-agent workflows can handle larger projects and more complex tasks.<br>* **Autonomy vs. coordination**: Single-agent workflows offer more autonomy, but multi-agent workflows require more coordination and communication.<br><br>Ultimately, the choice between a single-agent and multi-agent workflow depends on the specific needs and goals of the project.</p>
+      </div>
+      <div class="panel">
+        <h2>Multi Agent Output</h2>
+        <p>**Comparison of Single-Agent and Multi-Agent Workflows**<br><br>Single-agent workflows are more effective when simple, observable, and bounded [1]. However, multi-agent workflows are useful for splitting specialized work and handling complex tasks, scalability, and dynamic environments [2, 3]. Stateful graphs facilitate agent routing and trace inspection [3].<br><br>**Key Takeaways:**<br><br>1. **Single-agent workflows**: Effective when simple, observable, and bounded [1].<br>2. **Multi-agent workflows**: Useful for complex tasks, scalability, and dynamic environments [2, 3].<br>3. **Stateful graphs**: Facilitate agent routing and trace inspection [3].<br><br>**Sources:**<br><br>[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents<br>[2] OpenAI Agents Orchestration - https://developers.openai.com/<br>[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/<br><br>Sources:<br>[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents<br>[2] OpenAI Agents Orchestration - https://developers.openai.com/<br>[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Luồng Chạy Dễ Đọc</h2>
+      <p class="muted">Mỗi dòng dưới đây giải thích bước đó làm gì, nhận input gì, tạo output gì, tốn bao nhiêu thời gian và token.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Bước</th>
+            <th>Làm gì</th>
+            <th>Input</th>
+            <th>Output</th>
+            <th>Thời gian</th>
+            <th>Input tokens</th>
+            <th>Output tokens</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody><tr>
+          <td><b>Baseline</b></td>
+          <td>Một agent trả lời trực tiếp, dùng làm mốc so sánh.</td>
+          <td>Query gốc</td>
+          <td>Final answer baseline</td>
+          <td>5.235248s</td>
+          <td>56</td>
+          <td>514</td>
+          <td>$0.000086</td>
+        </tr>
+<tr>
+          <td><b>Supervisor</b></td>
+          <td>Kiểm tra state và chọn agent tiếp theo.</td>
+          <td>ResearchState hiện tại</td>
+          <td>Route history: researcher, analyst, writer, done</td>
+          <td>0.000045s</td>
+          <td>0</td>
+          <td>0</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Researcher</b></td>
+          <td>Tìm nguồn và viết research notes.</td>
+          <td>Query + max_sources</td>
+          <td>3 sources, research_notes</td>
+          <td>0.000049s</td>
+          <td>0</td>
+          <td>0</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Analyst</b></td>
+          <td>Phân tích notes thành insight/trade-off.</td>
+          <td>research_notes</td>
+          <td>analysis_notes</td>
+          <td>3.310098s</td>
+          <td>123</td>
+          <td>330</td>
+          <td>$0.000068</td>
+        </tr>
+<tr>
+          <td><b>Writer</b></td>
+          <td>Tổng hợp final answer và gắn source references.</td>
+          <td>research_notes + analysis_notes + sources</td>
+          <td>final_answer</td>
+          <td>3.861081s</td>
+          <td>515</td>
+          <td>195</td>
+          <td>$0.000107</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Thời Gian Theo Event</h2>
+      <p class="muted">Đây là timing raw theo từng event được ghi trong trace của multi-agent.</p>
+      <table><thead><tr><th>Step</th><th>Duration (s)</th></tr></thead><tbody><tr><td>supervisor</td><td>0.000024</td></tr>
+<tr><td>researcher</td><td>0.000049</td></tr>
+<tr><td>supervisor</td><td>0.000007</td></tr>
+<tr><td>analyst</td><td>3.310098</td></tr>
+<tr><td>supervisor</td><td>0.000006</td></tr>
+<tr><td>writer</td><td>3.861081</td></tr>
+<tr><td>supervisor</td><td>0.000008</td></tr></tbody></table>
+    </section>
+
+    <section class="panel">
+      <h2>Trace Raw Của Multi-Agent</h2>
+      <p class="muted">Dùng phần này để debug chi tiết route, token usage, source count và payload nội bộ.</p>
+      <table><thead><tr><th>Event</th><th>Payload</th></tr></thead><tbody><tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;researcher&quot;, &quot;iteration&quot;: 1}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 2.3599999622092582e-05}</code></td></tr>
+<tr><td>researcher</td><td><code>{&quot;sources&quot;: 3, &quot;errors&quot;: 0}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;researcher&quot;, &quot;duration_seconds&quot;: 4.9000000217347406e-05}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;analyst&quot;, &quot;iteration&quot;: 2}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 7.300001016119495e-06}</code></td></tr>
+<tr><td>analyst</td><td><code>{&quot;has_analysis&quot;: true, &quot;input_tokens&quot;: 123, &quot;output_tokens&quot;: 330, &quot;cost_usd&quot;: 6.795e-05}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;analyst&quot;, &quot;duration_seconds&quot;: 3.3100975999986986}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;writer&quot;, &quot;iteration&quot;: 3}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 6.100000973674469e-06}</code></td></tr>
+<tr><td>writer</td><td><code>{&quot;has_final_answer&quot;: true, &quot;input_tokens&quot;: 515, &quot;output_tokens&quot;: 195, &quot;cost_usd&quot;: 0.0001065}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;writer&quot;, &quot;duration_seconds&quot;: 3.8610810000009224}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;done&quot;, &quot;iteration&quot;: 4}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 7.599999662488699e-06}</code></td></tr></tbody></table>
+    </section>
+
+    <section class="panel">
+      <h2>Research Sources</h2>
+      <ul class="sources"><li><a href="https://www.anthropic.com/engineering/building-effective-agents">Building Effective Agents</a><span>Agent systems work best when workflows are simple, observable, and bounded.</span></li>
+<li><a href="https://developers.openai.com/">OpenAI Agents Orchestration</a><span>Handoffs and orchestration help split specialized work across agents.</span></li>
+<li><a href="https://langchain-ai.github.io/langgraph/concepts/">LangGraph Concepts</a><span>Stateful graphs make agent routing and trace inspection explicit.</span></li></ul>
+    </section>
+
+    <section class="panel">
+      <h2>Fallback Run</h2>
+      <p class="muted">Run này cố tình dùng query lỗi để chứng minh workflow không chết giữa chừng.</p>
+      <p><b>Query:</b> search-error Compare agent workflows</p>
+      <p><b>Output:</b> **Final Answer:**<br><br>Comparing agent workflows in multi-agent systems is a complex task due to the lack of standardization and limited research in the field. However, it can be useful for identifying the most effective and efficient approaches to problem-solving in complex, distributed, and real-time systems.<br><br>**Key Takeaways:**<br><br>1. Multi-agent systems are useful for complex problem-solving, distributed problem-solving, and real-time systems.<br>2. Comparing agent workflows can help identify the most effective and efficient approaches.<br>3. Developing a standard framework, conducting more research, and using case studies are recommended to improve the understanding of agent workflows.<br><br>**Low Confidence:**<br><br>Due to the lack of external sources and standardization in comparing agent workflows, this analysis is marked with low confidence.<br><br>**Recommendations:**<br><br>1. Develop a standard framework for comparing agent workflows.<br>2. Conduct more research on comparing agent workflows.<br>3. Use case studies to demonstrate the effectiveness and efficiency of different agent workflows.<br><br>**Sources:**<br><br>No external sources found. This analysis relies on general knowledge and is marked with low confidence.</p>
+      <table><thead><tr><th>Step</th><th>Duration (s)</th></tr></thead><tbody><tr><td>supervisor</td><td>0.000002</td></tr>
+<tr><td>researcher</td><td>0.000016</td></tr>
+<tr><td>supervisor</td><td>0.000001</td></tr>
+<tr><td>analyst</td><td>5.769975</td></tr>
+<tr><td>supervisor</td><td>0.000007</td></tr>
+<tr><td>writer</td><td>2.938837</td></tr>
+<tr><td>supervisor</td><td>0.000008</td></tr></tbody></table>
+      <ul class="errors"><li>researcher search failed: Mock search failure requested by query</li></ul>
+    </section>
+  </main>
+</body>
+</html>

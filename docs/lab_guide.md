@@ -1,77 +1,99 @@
 # Lab Guide: Multi-Agent Research System
 
-## Scenario
+## Goal
 
-Bạn cần xây dựng một research assistant có thể nhận câu hỏi dài, tìm thông tin, phân tích và viết câu trả lời cuối cùng. Lab yêu cầu so sánh hai cách làm:
+Lab này so sánh single-agent baseline với multi-agent workflow cho cùng một câu hỏi nghiên cứu. Một lệnh report sẽ chạy cả hai bên, tạo dữ liệu thống kê và HTML để xem trace.
 
-1. **Single-agent baseline**: một agent làm toàn bộ.
-2. **Multi-agent workflow**: Supervisor điều phối Researcher, Analyst, Writer.
+## What Was Implemented
 
-## Quy tắc quan trọng
+- Single-agent baseline trong `src/multi_agent_research_lab/cli.py`.
+- NVIDIA/OpenAI-compatible LLM client trong `src/multi_agent_research_lab/services/llm_client.py`.
+- Mock search client trong `src/multi_agent_research_lab/services/search_client.py`.
+- Supervisor, Researcher, Analyst, Writer agents trong `src/multi_agent_research_lab/agents/`.
+- Workflow route trong `src/multi_agent_research_lab/graph/workflow.py`.
+- Benchmark/report generator trong `scripts/generate_report.py`.
 
-- Không thêm agent nếu không có lý do rõ ràng.
-- Mỗi agent phải có responsibility riêng.
-- Shared state phải đủ rõ để debug.
-- Phải có trace hoặc log cho từng bước.
-- Phải benchmark, không chỉ nhìn output bằng cảm tính.
+## Run Mock Report
 
-## Milestone 1: Baseline
+Mock mode không tốn token và dùng để test luồng, fallback, trace.
 
-File gợi ý:
+```powershell
+$env:UV_CACHE_DIR='E:\AI20K-lab\phase2-day5-NguyenBaThanh-2A202600675\.uv-cache'
+uv run python scripts\generate_report.py
+```
 
-- `src/multi_agent_research_lab/cli.py`
-- `src/multi_agent_research_lab/services/llm_client.py`
+## Run Real API Report
 
-TODO(student): thay baseline placeholder bằng một call LLM thật.
+Lệnh này chạy cả baseline, multi-agent, fallback test và generate report.
 
-## Milestone 2: Supervisor
+```powershell
+$env:UV_CACHE_DIR='E:\AI20K-lab\phase2-day5-NguyenBaThanh-2A202600675\.uv-cache'
+$env:NVIDIA_API_KEY='YOUR_NVIDIA_KEY'
+$env:USE_MOCK_LLM='0'
+$env:OPENAI_BASE_URL='https://integrate.api.nvidia.com/v1'
+$env:OPENAI_MODEL='meta/llama-3.1-8b-instruct'
+$env:LLM_REQUESTS_PER_MINUTE='39'
+$env:LLM_INPUT_COST_PER_1M_TOKENS='0.15'
+$env:LLM_OUTPUT_COST_PER_1M_TOKENS='0.15'
 
-File gợi ý:
+uv run python scripts\generate_report.py --real
+```
 
-- `src/multi_agent_research_lab/agents/supervisor.py`
-- `src/multi_agent_research_lab/graph/workflow.py`
+Nếu model NVIDIA bạn dùng có giá khác, đổi hai biến `LLM_INPUT_COST_PER_1M_TOKENS` và `LLM_OUTPUT_COST_PER_1M_TOKENS`.
 
-TODO(student): implement routing policy.
+## Report Files
 
-Gợi ý câu hỏi thiết kế:
+Sau khi chạy, mở:
 
-- Khi nào gọi Researcher?
-- Khi nào gọi Analyst?
-- Khi nào gọi Writer?
-- Khi nào stop?
-- Nếu agent fail thì retry hay fallback?
+- `reports/benchmark_report.html`: xem dashboard HTML.
+- `reports/benchmark_report.json`: dữ liệu gốc của report.
+- `reports/benchmark_report.md`: bản Markdown nộp nhanh.
 
-## Milestone 3: Worker agents
+HTML hiển thị:
 
-File gợi ý:
+- input/output tokens,
+- estimated cost,
+- latency,
+- output thực tế của single-agent và multi-agent,
+- sources,
+- trace payload,
+- time by step,
+- errors và fallback output.
 
-- `agents/researcher.py`
-- `agents/analyst.py`
-- `agents/writer.py`
+## Baseline vs Multi-Agent
 
-TODO(student): implement từng worker.
+Baseline:
 
-## Milestone 4: Trace và benchmark
+- một LLM call,
+- ít bước hơn,
+- nhanh và rẻ hơn,
+- ít trace hơn.
 
-File gợi ý:
+Multi-agent:
 
-- `observability/tracing.py`
-- `evaluation/benchmark.py`
-- `evaluation/report.py`
+- Researcher tạo sources và notes,
+- Analyst tạo analysis,
+- Writer tạo final answer kèm references,
+- có route history, timing, trace,
+- thường tốn token hơn.
 
-Benchmark tối thiểu:
+## Failure Scenarios
 
-| Metric | Cách đo gợi ý |
-|---|---|
-| Latency | wall-clock time |
-| Cost | token usage hoặc provider usage |
-| Quality | rubric 0-10 do peer review |
-| Citation coverage | số claims có source / tổng claims chính |
-| Failure rate | số query fail / tổng query |
+Report luôn chạy thêm fallback query:
 
-## Exit ticket
+```text
+search-error Compare agent workflows
+```
 
-Mỗi nhóm trả lời 2 câu:
+Case này ép search lỗi. Workflow vẫn phải:
 
-1. Case nào nên dùng multi-agent? Vì sao?
-2. Case nào không nên dùng multi-agent? Vì sao?
+- ghi lỗi vào `errors`,
+- tạo fallback research notes,
+- tạo fallback analysis nếu LLM lỗi,
+- tạo fallback final answer,
+- giữ trace để debug.
+
+## Exit Ticket
+
+1. Nên dùng multi-agent khi task cần nguồn, phân tích, synthesis, trace và fallback rõ ràng.
+2. Không nên dùng multi-agent cho câu hỏi ngắn hoặc tác vụ đơn giản vì overhead token, latency và orchestration cao hơn baseline.

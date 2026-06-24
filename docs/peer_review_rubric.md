@@ -1,20 +1,33 @@
 # Peer Review Rubric
 
-Mỗi nhóm review repo/trace của một nhóm khác trong 8 phút.
-
-| Tiêu chí | Câu hỏi | Điểm |
+| Criteria | Evidence in this repo | Score |
 |---|---|---:|
-| Role clarity | Mỗi agent có nhiệm vụ rõ, không overlap quá nhiều không? | 0-2 |
-| State design | Shared state có đủ thông tin để handoff mà không mất context không? | 0-2 |
-| Failure guard | Có max iterations, timeout, retry/fallback, validation không? | 0-2 |
-| Benchmark | Có so sánh single vs multi-agent bằng metric cụ thể không? | 0-2 |
-| Trace explanation | Nhóm giải thích được trace: ai làm gì, tốn bao nhiêu, sai ở đâu không? | 0-2 |
+| Role clarity | Supervisor routes; Researcher collects sources; Analyst extracts trade-offs; Writer synthesizes answer | 0-2 |
+| State design | `ResearchState` stores request, route history, sources, notes, final answer, trace, errors | 0-2 |
+| Failure guard | Max iterations, timeout, retry, 39 RPM limit, mock fallback scenarios | 0-2 |
+| Benchmark | `scripts/generate_report.py` compares baseline vs multi-agent with latency, token, cost, sources, errors | 0-2 |
+| Trace explanation | `reports/benchmark_report.html` shows trace payload and time by step | 0-2 |
 
-## Feedback format
+## Suggested Score
+
+9/10 for the current implementation.
+
+Missing point: search is still local mock data, not a real web/search provider. This is intentional for cheaper debugging and stable lab runs.
+
+## Feedback Format
 
 ```text
 Strength:
+- Workflow is traceable from supervisor route to final answer.
+- Report compares single-agent and multi-agent with token, cost, latency, output, sources, and errors.
+
 Risk / failure mode:
+- Estimated cost depends on configured token rates, not provider billing response.
+- Search source is local mock, so source coverage is structural rather than live web coverage.
+
 One concrete improvement:
+- Add a real search provider behind SearchClient while keeping current mock fallback.
+
 Score:
+- 9/10
 ```

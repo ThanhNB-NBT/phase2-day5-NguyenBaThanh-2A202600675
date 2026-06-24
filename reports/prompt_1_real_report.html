@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prompt 1: ResearchAgentBench Benchmark Design</title>
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --panel: #fff;
+      --text: #18202a;
+      --muted: #657184;
+      --line: #d9dee7;
+      --accent: #0f766e;
+      --bad: #b91c1c;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 15px/1.55 Arial, sans-serif; color: var(--text); background: var(--bg); }
+    header, main { max-width: 1240px; margin: 0 auto; padding: 24px; }
+    h1, h2 { margin: 0 0 12px; }
+    h1 { font-size: 30px; }
+    h2 { font-size: 20px; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin: 14px 0; }
+    .metric strong { display: block; font-size: 28px; color: var(--accent); }
+    .lead { max-width: 900px; }
+    table { width: 100%; border-collapse: collapse; background: var(--panel); }
+    th, td { border: 1px solid var(--line); padding: 10px; vertical-align: top; text-align: left; }
+    th { background: #eef2f7; }
+    code { display: block; white-space: pre-wrap; color: var(--muted); }
+    ul { padding-left: 20px; }
+    .sources span { display: block; color: var(--muted); }
+    .errors li { color: var(--bad); }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; background: #e6fffb; color: var(--accent); }
+    .help {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 18px;
+      height: 18px;
+      margin-left: 6px;
+      border-radius: 50%;
+      background: #dbeafe;
+      color: #1d4ed8;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: help;
+    }
+    @media (max-width: 840px) { .grid, .compare { grid-template-columns: 1fr; } header, main { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="badge">Real API data</span>
+    <h1>Prompt 1: ResearchAgentBench Benchmark Design</h1>
+    <p class="muted lead">Report này chạy cùng một prompt qua hai luồng: baseline một agent và multi-agent có Supervisor, Researcher, Analyst, Writer. HTML render từ <code>reports/prompt_1_real_report.json</code>. Cost là ước tính từ token usage và rate cấu hình.</p>
+  </header>
+  <main>
+    <section class="grid">
+      <div class="panel metric"><span>Multi input tokens <span class="help" title="Tổng prompt tokens của các LLM call trong multi-agent run.">?</span></span><strong>1346</strong></div>
+      <div class="panel metric"><span>Multi output tokens <span class="help" title="Tổng completion tokens do model sinh ra trong multi-agent run.">?</span></span><strong>1200</strong></div>
+      <div class="panel metric"><span>Multi latency <span class="help" title="Wall-clock time từ lúc bắt đầu multi-agent run tới khi có final answer.">?</span></span><strong>13.967s</strong></div>
+      <div class="panel metric"><span>Multi estimated cost <span class="help" title="Ước tính từ token usage nhân với LLM_INPUT/OUTPUT_COST_PER_1M_TOKENS.">?</span></span><strong>$0.000382</strong></div>
+    </section>
+
+    <section class="panel">
+      <h2>Benchmark Metrics <span class="help" title="Quality là điểm heuristic: final answer = 7, có sources +1, có errors trừ tối đa 2. Không phải judge LLM.">?</span></h2>
+      <table>
+        <thead><tr><th>Run</th><th>Latency <span class="help" title="Tổng thời gian chạy của run.">?</span></th><th>Input tokens <span class="help" title="Prompt tokens.">?</span></th><th>Output tokens <span class="help" title="Completion tokens.">?</span></th><th>Estimated cost <span class="help" title="Chi phí ước tính, không phải hóa đơn provider.">?</span></th><th>Quality <span class="help" title="Heuristic nội bộ để so sánh nhanh.">?</span></th><th>Sources <span class="help" title="Số nguồn Researcher thu được.">?</span></th><th>Errors <span class="help" title="Số lỗi đã được fallback và ghi lại.">?</span></th></tr></thead>
+        <tbody><tr>
+          <td>real-baseline</td>
+          <td>8.361</td>
+          <td>275</td>
+          <td>600</td>
+          <td>0.000131</td>
+          <td>7.0</td>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <td>real-multi-agent</td>
+          <td>13.967</td>
+          <td>1346</td>
+          <td>1200</td>
+          <td>0.000382</td>
+          <td>8.0</td>
+          <td>3</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <td>real-fallback</td>
+          <td>8.584</td>
+          <td>591</td>
+          <td>550</td>
+          <td>0.000171</td>
+          <td>6.0</td>
+          <td>0</td>
+          <td>1</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Single vs Multi-Agent</h2>
+      <p class="muted">Bảng này là phần đọc nhanh: multi-agent thường tốn thêm token/thời gian nhưng có nguồn, trace và chia vai rõ hơn.</p>
+      <table>
+        <thead><tr><th>Metric</th><th>Single Agent</th><th>Multi Agent</th></tr></thead>
+        <tbody><tr>
+          <th>Latency</th>
+          <td>8.361s</td>
+          <td>13.967s</td>
+        </tr>
+<tr>
+          <th>Input tokens</th>
+          <td>275</td>
+          <td>1346</td>
+        </tr>
+<tr>
+          <th>Output tokens</th>
+          <td>600</td>
+          <td>1200</td>
+        </tr>
+<tr>
+          <th>Estimated cost</th>
+          <td>$0.000131</td>
+          <td>$0.000382</td>
+        </tr>
+<tr>
+          <th>Sources</th>
+          <td>0</td>
+          <td>3</td>
+        </tr>
+<tr>
+          <th>Trace steps</th>
+          <td>1</td>
+          <td>14</td>
+        </tr>
+<tr>
+          <th>Errors</th>
+          <td>0</td>
+          <td>0</td>
+        </tr>
+<tr>
+          <th>Routes</th>
+          <td>baseline</td>
+          <td>researcher, analyst, writer, done</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Prompts Used <span class="help" title="Các system/user prompts thực tế đã gửi vào LLM client cho baseline, analyst và writer.">?</span></h2>
+      <table>
+        <thead><tr><th>Run</th><th>Agent</th><th>System prompt</th><th>User prompt</th></tr></thead>
+        <tbody><tr>
+                  <td>Single Agent</td>
+                  <td>writer</td>
+                  <td><code>You are a single research agent. Answer directly and mention trade-offs.</code></td>
+                  <td><code>You are part of a university lab designing a benchmark to evaluate AI systems that assist students with research tasks.<br><br>Your task is to design a benchmark called ResearchAgentBench.<br><br>The benchmark should evaluate whether an AI system can actually help a graduate student complete research work, not just produce fluent text.<br><br>You must produce a full benchmark design document that includes:<br>1. Benchmark goal<br>2. Core assumptions<br>3. Task categories<br>4. At least 12 example tasks across different categories<br>5. A scoring rubric<br>6. Baselines to compare against<br>7. Likely failure modes and gaming risks<br>8. Human evaluation protocol<br>9. Limitations of the benchmark<br>10. Recommendations for version 2 of the benchmark<br><br>Constraints:<br>- The benchmark must be realistic for a small academic lab<br>- It must not depend on expensive annotation<br>- It must distinguish between usefulness, correctness, and research judgment<br>- It must include at least one adversarial or stress-test component<br>- It must explicitly discuss how systems might game the evaluation<br><br>Output format:<br>Write this as a mini design document suitable for discussion in a research lab meeting.</code></td>
+                </tr><tr>
+                  <td>Multi Agent</td>
+                  <td>analyst</td>
+                  <td><code>You are the analyst agent.</code></td>
+                  <td><code>Query: You are part of a university lab designing a benchmark to evaluate AI systems that assist students with research tasks.<br><br>Your task is to design a benchmark called ResearchAgentBench.<br><br>The benchmark should evaluate whether an AI system can actually help a graduate student complete research work, not just produce fluent text.<br><br>You must produce a full benchmark design document that includes:<br>1. Benchmark goal<br>2. Core assumptions<br>3. Task categories<br>4. At least 12 example tasks across different categories<br>5. A scoring rubric<br>6. Baselines to compare against<br>7. Likely failure modes and gaming risks<br>8. Human evaluation protocol<br>9. Limitations of the benchmark<br>10. Recommendations for version 2 of the benchmark<br><br>Constraints:<br>- The benchmark must be realistic for a small academic lab<br>- It must not depend on expensive annotation<br>- It must distinguish between usefulness, correctness, and research judgment<br>- It must include at least one adversarial or stress-test component<br>- It must explicitly discuss how systems might game the evaluation<br><br>Output format:<br>Write this as a mini design document suitable for discussion in a research lab meeting.<br>Research notes:<br>- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.<br>- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.<br>- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.<br>Extract key claims, weak evidence, and when multi-agent is useful.</code></td>
+                </tr>
+<tr>
+                  <td>Multi Agent</td>
+                  <td>writer</td>
+                  <td><code>You are the writer agent producing the final answer.</code></td>
+                  <td><code>Query: You are part of a university lab designing a benchmark to evaluate AI systems that assist students with research tasks.<br><br>Your task is to design a benchmark called ResearchAgentBench.<br><br>The benchmark should evaluate whether an AI system can actually help a graduate student complete research work, not just produce fluent text.<br><br>You must produce a full benchmark design document that includes:<br>1. Benchmark goal<br>2. Core assumptions<br>3. Task categories<br>4. At least 12 example tasks across different categories<br>5. A scoring rubric<br>6. Baselines to compare against<br>7. Likely failure modes and gaming risks<br>8. Human evaluation protocol<br>9. Limitations of the benchmark<br>10. Recommendations for version 2 of the benchmark<br><br>Constraints:<br>- The benchmark must be realistic for a small academic lab<br>- It must not depend on expensive annotation<br>- It must distinguish between usefulness, correctness, and research judgment<br>- It must include at least one adversarial or stress-test component<br>- It must explicitly discuss how systems might game the evaluation<br><br>Output format:<br>Write this as a mini design document suitable for discussion in a research lab meeting.<br>Research:<br>- Building Effective Agents: Agent systems work best when workflows are simple, observable, and bounded.<br>- OpenAI Agents Orchestration: Handoffs and orchestration help split specialized work across agents.<br>- LangGraph Concepts: Stateful graphs make agent routing and trace inspection explicit.<br>Analysis:<br>**ResearchAgentBench Design Document**<br><br>**1. Benchmark Goal**<br><br>The ResearchAgentBench aims to evaluate the effectiveness of AI systems in assisting graduate students with research tasks, focusing on the system&#x27;s ability to provide useful, accurate, and well-reasoned assistance.<br><br>**2. Core Assumptions**<br><br>* AI systems will be designed to assist graduate students with research tasks, such as literature review, data analysis, and writing.<br>* The AI system will interact with the graduate student through a user interface, providing suggestions, recommendations, and potentially even generating text.<br>* The graduate student will be the primary user of the AI system, and their needs and expectations will drive the evaluation.<br><br>**3. Task Categories**<br><br>The ResearchAgentBench will consist of the following task categories:<br><br>1. **Literature Review**: The AI system must identify relevant papers, summarize their findings, and provide context for the graduate student&#x27;s research.<br>2. **Data Analysis**: The AI system must assist the graduate student in cleaning, processing, and visualizing data, as well as identifying trends and patterns.<br>3. **Writing Assistance**: The AI system must provide suggestions for improving the clarity, coherence, and grammar of the graduate student&#x27;s writing.<br>4. **Research Design**: The AI system must help the graduate student design and plan their research, including identifying research questions, hypotheses, and methodologies.<br>5. **Adversarial Tasks**: The AI system must demonstrate its ability to handle ambiguous, incomplete, or contradictory information, as well as unexpected or adversarial inputs.<br><br>**4. Example Tasks**<br><br>Here are 12 example tasks across different categories:<br><br>1. **Literature Review**: Identify 5 relevant papers on the topic of &quot;machine learning in healthcare&quot; and summarize their findings.<br>2. **Data Analysis**: Clean and process a dataset of patient outcomes, identifying trends and patterns in the data.<br>3. **Writing Assistance**: Suggest improvements to a paragraph of text on the topic of &quot;the ethics of AI in research&quot;.<br>4. **Research Design**: Help design a study to investigate the impact of AI on student learning outcomes.<br>5. **Adversarial Tasks**: Handle a scenario where a graduate student provides contradictory information about their research goals.<br>6. **Literature Review**: Summarize the key findings of a paper on &quot;the history of AI research&quot;.<br>7. **Data Analysis**: Assist in visualizing a dataset of stock prices, identifying trends and patterns.<br>8. **Writing Assistance**: Suggest improvements to a section of text on the topic of &quot;the future of AI in education&quot;.<br>9. **Research Design**: Help identify potential research questions and hypotheses for a study on &quot;the impact of AI on mental health&quot;.<br>10. **Adversarial Tasks**: Handle a scenario where a graduate student provides incomplete information about their research goals.<br>11. **Literature Review**: Identify 3 papers on the topic of &quot;the ethics of AI in research&quot; and summarize their findings.<br>12. **Data Analysis**: Assist<br>Sources:<br>[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents<br>[2] OpenAI Agents Orchestration - https://developers.openai.com/<br>[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/<br>Write a concise final answer with source references when available.</code></td>
+                </tr></tbody>
+      </table>
+    </section>
+
+    <section class="compare">
+      <div class="panel">
+        <h2>Single Agent Output</h2>
+        <p>**ResearchAgentBench Design Document**<br><br>**Benchmark Goal:**<br>ResearchAgentBench aims to evaluate the effectiveness of AI systems in assisting graduate students with research tasks, focusing on their ability to provide useful, correct, and well-judged information.<br><br>**Core Assumptions:**<br><br>1. AI systems will be designed to assist graduate students with research tasks, not replace them.<br>2. The primary goal of the AI system is to provide useful information that helps the student complete their research work.<br>3. The AI system&#x27;s performance will be evaluated based on its ability to provide correct and well-judged information, rather than just producing fluent text.<br><br>**Task Categories:**<br><br>1. **Information Retrieval**: Retrieving relevant information from academic databases, articles, and websites.<br>2. **Conceptual Understanding**: Evaluating the AI system&#x27;s ability to understand and explain complex research concepts.<br>3. **Methodological Guidance**: Providing guidance on research methods, experimental design, and data analysis.<br>4. **Literature Review**: Evaluating the AI system&#x27;s ability to summarize and synthesize existing research on a topic.<br>5. **Adversarial Testing**: Evaluating the AI system&#x27;s performance under stress-test conditions, such as providing incorrect or misleading information.<br><br>**Example Tasks:**<br><br>1. **Task 1**: Retrieve the definition of &quot;machine learning&quot; from a reputable academic source.<br>2. **Task 2**: Explain the concept of &quot;overfitting&quot; in the context of neural networks.<br>3. **Task 3**: Provide guidance on designing an experiment to test the effect of a new variable on a dependent variable.<br>4. **Task 4**: Summarize the main findings of a recent study on the application of deep learning in computer vision.<br>5. **Task 5**: Identify the limitations of a particular research method and suggest alternative approaches.<br>6. **Task 6**: Evaluate the validity of a study that uses a non-random sampling method.<br>7. **Task 7**: Provide a list of relevant sources on the topic of &quot;explainable AI&quot;.<br>8. **Task 8**: Explain the difference between a &quot;null hypothesis&quot; and a &quot;research hypothesis&quot;.<br>9. **Task 9**: Identify the potential biases in a study that uses a convenience sample.<br>10. **Task 10**: Evaluate the strengths and weaknesses of a particular research design.<br>11. **Task 11**: Provide guidance on how to write a literature review on a specific topic.<br>12. **Task 12**: Identify the key findings of a study that uses a mixed-methods approach.<br><br>**Scoring Rubric:**<br><br>1. **Usefulness**: How useful is the information provided by the AI system to the graduate student?<br>2. **Correctness**: How accurate is the information provided by the AI system?<br>3. **Research Judgment**: How well does the AI system demonstrate research judgment, such as identifying limitations and biases?<br><br>**Baselines to Compare Against:**<br><br>1. **Human Baseline</p>
+      </div>
+      <div class="panel">
+        <h2>Multi Agent Output</h2>
+        <p>**ResearchAgentBench Design Document**<br><br>**1. Benchmark Goal**<br><br>Evaluate the effectiveness of AI systems in assisting graduate students with research tasks, focusing on usefulness, correctness, and research judgment.<br><br>**2. Core Assumptions**<br><br>* AI systems will assist graduate students with research tasks through a user interface.<br>* The graduate student&#x27;s needs and expectations will drive the evaluation.<br><br>**3. Task Categories**<br><br>1. **Literature Review**: Identify relevant papers, summarize findings, and provide context.<br>2. **Data Analysis**: Assist with data cleaning, processing, visualization, and trend identification.<br>3. **Writing Assistance**: Provide suggestions for improving clarity, coherence, and grammar.<br>4. **Research Design**: Help design and plan research, including identifying research questions, hypotheses, and methodologies.<br>5. **Adversarial Tasks**: Handle ambiguous, incomplete, or contradictory information, as well as unexpected or adversarial inputs.<br><br>**4. Example Tasks**<br><br>1. **Literature Review**: Identify 5 papers on &quot;machine learning in healthcare&quot; and summarize findings.<br>2. **Data Analysis**: Clean and process a patient outcomes dataset, identifying trends and patterns.<br>3. **Writing Assistance**: Suggest improvements to a paragraph on &quot;the ethics of AI in research&quot;.<br>4. **Research Design**: Help design a study on the impact of AI on student learning outcomes.<br>5. **Adversarial Tasks**: Handle a scenario where a graduate student provides contradictory information about their research goals.<br>6. **Literature Review**: Summarize the key findings of a paper on &quot;the history of AI research&quot;.<br>7. **Data Analysis**: Assist in visualizing a dataset of stock prices, identifying trends and patterns.<br>8. **Writing Assistance**: Suggest improvements to a section of text on &quot;the future of AI in education&quot;.<br>9. **Research Design**: Help identify potential research questions and hypotheses for a study on &quot;the impact of AI on mental health&quot;.<br>10. **Adversarial Tasks**: Handle a scenario where a graduate student provides incomplete information about their research goals.<br>11. **Literature Review**: Identify 3 papers on &quot;the ethics of AI in research&quot; and summarize their findings.<br>12. **Data Analysis**: Assist in cleaning and processing a dataset of social media posts, identifying trends and patterns.<br><br>**5. Scoring Rubric**<br><br>* Usefulness: 1-5 (1: not useful, 5: very useful)<br>* Correctness: 1-5 (1: incorrect, 5: correct)<br>* Research Judgment: 1-5 (1: poor judgment, 5: good judgment)<br><br>**6. Baselines to Compare Against**<br><br>* Human performance on a subset of tasks<br>* State-of-the-art AI systems on a subset of tasks<br><br>**7. Likely Failure Modes and Gaming Risks**<br><br>* Overfitting to specific tasks or datasets<br>* Gaming the system by providing biased or incomplete information<br>* Failing to handle ambiguous or contradictory information<br><br>**8.<br><br>Sources:<br>[1] Building Effective Agents - https://www.anthropic.com/engineering/building-effective-agents<br>[2] OpenAI Agents Orchestration - https://developers.openai.com/<br>[3] LangGraph Concepts - https://langchain-ai.github.io/langgraph/concepts/</p>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Luồng Chạy Dễ Đọc</h2>
+      <p class="muted">Mỗi dòng dưới đây giải thích bước đó làm gì, nhận input gì, tạo output gì, tốn bao nhiêu thời gian và token.</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Bước</th>
+            <th>Làm gì</th>
+            <th>Input</th>
+            <th>Output</th>
+            <th>Thời gian</th>
+            <th>Input tokens</th>
+            <th>Output tokens</th>
+            <th>Cost</th>
+          </tr>
+        </thead>
+        <tbody><tr>
+          <td><b>Baseline</b></td>
+          <td>Một agent trả lời trực tiếp, dùng làm mốc so sánh.</td>
+          <td>Query gốc</td>
+          <td>Final answer baseline</td>
+          <td>8.361038s</td>
+          <td>275</td>
+          <td>600</td>
+          <td>$0.000131</td>
+        </tr>
+<tr>
+          <td><b>Supervisor</b></td>
+          <td>Kiểm tra state và chọn agent tiếp theo.</td>
+          <td>ResearchState hiện tại</td>
+          <td>Route history: researcher, analyst, writer, done</td>
+          <td>0.000066s</td>
+          <td>0</td>
+          <td>0</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Researcher</b></td>
+          <td>Tìm nguồn và viết research notes.</td>
+          <td>Query + max_sources</td>
+          <td>3 sources, research_notes</td>
+          <td>0.000076s</td>
+          <td>0</td>
+          <td>0</td>
+          <td>$0.000000</td>
+        </tr>
+<tr>
+          <td><b>Analyst</b></td>
+          <td>Phân tích notes thành insight/trade-off.</td>
+          <td>research_notes</td>
+          <td>analysis_notes</td>
+          <td>6.046208s</td>
+          <td>341</td>
+          <td>600</td>
+          <td>$0.000141</td>
+        </tr>
+<tr>
+          <td><b>Writer</b></td>
+          <td>Tổng hợp final answer và gắn source references.</td>
+          <td>research_notes + analysis_notes + sources</td>
+          <td>final_answer</td>
+          <td>7.920875s</td>
+          <td>1005</td>
+          <td>600</td>
+          <td>$0.000241</td>
+        </tr></tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <h2>Thời Gian Theo Event</h2>
+      <p class="muted">Đây là timing raw theo từng event được ghi trong trace của multi-agent.</p>
+      <table><thead><tr><th>Step</th><th>Duration (s)</th></tr></thead><tbody><tr><td>supervisor</td><td>0.000036</td></tr>
+<tr><td>researcher</td><td>0.000076</td></tr>
+<tr><td>supervisor</td><td>0.000017</td></tr>
+<tr><td>analyst</td><td>6.046208</td></tr>
+<tr><td>supervisor</td><td>0.000006</td></tr>
+<tr><td>writer</td><td>7.920875</td></tr>
+<tr><td>supervisor</td><td>0.000006</td></tr></tbody></table>
+    </section>
+
+    <section class="panel">
+      <h2>Trace Raw Của Multi-Agent</h2>
+      <p class="muted">Dùng phần này để debug chi tiết route, token usage, source count và payload nội bộ.</p>
+      <table><thead><tr><th>Event</th><th>Payload</th></tr></thead><tbody><tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;researcher&quot;, &quot;iteration&quot;: 1}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 3.6299999919719994e-05}</code></td></tr>
+<tr><td>researcher</td><td><code>{&quot;sources&quot;: 3, &quot;errors&quot;: 0}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;researcher&quot;, &quot;duration_seconds&quot;: 7.550000009359792e-05}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;analyst&quot;, &quot;iteration&quot;: 2}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 1.720000000204891e-05}</code></td></tr>
+<tr><td>analyst</td><td><code>{&quot;has_analysis&quot;: true, &quot;input_tokens&quot;: 341, &quot;output_tokens&quot;: 600, &quot;cost_usd&quot;: 0.00014115000000000002}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;analyst&quot;, &quot;duration_seconds&quot;: 6.046208100000513}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;writer&quot;, &quot;iteration&quot;: 3}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 6.400001439033076e-06}</code></td></tr>
+<tr><td>writer</td><td><code>{&quot;has_final_answer&quot;: true, &quot;input_tokens&quot;: 1005, &quot;output_tokens&quot;: 600, &quot;cost_usd&quot;: 0.00024075}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;writer&quot;, &quot;duration_seconds&quot;: 7.920874699999331}</code></td></tr>
+<tr><td>supervisor</td><td><code>{&quot;route&quot;: &quot;done&quot;, &quot;iteration&quot;: 4}</code></td></tr>
+<tr><td>timing</td><td><code>{&quot;step&quot;: &quot;supervisor&quot;, &quot;duration_seconds&quot;: 6.499998562503606e-06}</code></td></tr></tbody></table>
+    </section>
+
+    <section class="panel">
+      <h2>Research Sources</h2>
+      <ul class="sources"><li><a href="https://www.anthropic.com/engineering/building-effective-agents">Building Effective Agents</a><span>Agent systems work best when workflows are simple, observable, and bounded.</span></li>
+<li><a href="https://developers.openai.com/">OpenAI Agents Orchestration</a><span>Handoffs and orchestration help split specialized work across agents.</span></li>
+<li><a href="https://langchain-ai.github.io/langgraph/concepts/">LangGraph Concepts</a><span>Stateful graphs make agent routing and trace inspection explicit.</span></li></ul>
+    </section>
+
+    <section class="panel">
+      <h2>Fallback Run</h2>
+      <p class="muted">Run này cố tình dùng query lỗi để chứng minh workflow không chết giữa chừng.</p>
+      <p><b>Query:</b> search-error Compare agent workflows</p>
+      <p><b>Output:</b> **Final Answer:**<br><br>Comparing agent workflows involves analyzing the strengths and weaknesses of different agents and their workflows to determine which one is more effective. Multi-agent systems, which consist of multiple agents working together to achieve a common goal, can lead to more efficient and effective workflows. These systems are useful in complex tasks, dynamic environments, and large-scale systems where multiple agents need to work together.<br><br>**Example Use Cases:**<br><br>1. Supply chain management<br>2. Traffic management<br>3. Healthcare<br><br>**Confidence Level:** Low (due to lack of external sources and reliance on general knowledge)<br><br>**Sources:** None available.</p>
+      <table><thead><tr><th>Step</th><th>Duration (s)</th></tr></thead><tbody><tr><td>supervisor</td><td>0.000002</td></tr>
+<tr><td>researcher</td><td>0.000018</td></tr>
+<tr><td>supervisor</td><td>0.000002</td></tr>
+<tr><td>analyst</td><td>3.680360</td></tr>
+<tr><td>supervisor</td><td>0.000006</td></tr>
+<tr><td>writer</td><td>4.903997</td></tr>
+<tr><td>supervisor</td><td>0.000009</td></tr></tbody></table>
+      <ul class="errors"><li>researcher search failed: Mock search failure requested by query</li></ul>
+    </section>
+  </main>
+</body>
+</html>
